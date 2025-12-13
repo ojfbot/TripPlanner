@@ -17,16 +17,71 @@
   gap: 1rem;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--cds-text-secondary);
+.welcome-message {
+  text-align: left;
+  padding: 2rem 2rem;
+  max-width: 1200px;
 }
 
-.empty-state h3 {
-  font-size: 1.5rem;
+.welcome-message h2 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.welcome-message p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--cds-text-secondary);
+  margin-bottom: 1rem;
+  max-width: 800px;
+}
+
+.quick-actions {
+  margin-top: 1.5rem;
+}
+
+.quick-actions-label {
+  font-size: 0.75rem;
+  font-weight: 600;
   margin-bottom: 0.5rem;
-  color: var(--cds-text-primary);
+  color: var(--cds-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quick-actions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.quick-action-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  margin: 0.125rem;
+}
+
+.quick-action-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  filter: brightness(1.1);
+}
+
+.quick-action-tag:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1em;
+  line-height: 1;
 }
 
 .message-tile {
@@ -79,15 +134,49 @@
 
 .chat-input-container {
   padding: 1rem;
-  background: var(--cds-layer-01);
+  background-color: var(--cds-layer-01);
   border-top: 1px solid var(--cds-border-subtle);
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
+  position: relative;
+  flex-shrink: 0;
 }
 
-.chat-input-container .cds--text-area-wrapper {
+.input-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.textarea-container {
   flex: 1;
+  position: relative;
+}
+
+.input-actions {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 10;
+}
+
+.microphone-button-input {
+  min-height: 2rem !important;
+  min-width: 2rem !important;
+  padding: 0.25rem !important;
+}
+
+.microphone-button-input:hover {
+  background-color: var(--cds-layer-accent-01) !important;
+}
+
+.microphone-button-input svg {
+  fill: var(--cds-icon-primary);
+}
+
+.send-button-inline {
+  min-height: 2rem !important;
+  min-width: 2rem !important;
 }
 
 /* Scrollbar styling */
