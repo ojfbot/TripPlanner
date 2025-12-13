@@ -24,11 +24,13 @@ function App() {
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock applications for demo - can be configured later
+  // Mock applications for demo
   const applications = [
     'TripPlanner',
     'BlogEngine',
     'CV Builder',
+    'Project Manager',
+    'Analytics Dashboard',
   ];
 
   // Port mapping for app navigation
@@ -60,7 +62,7 @@ function App() {
       const url = `http://localhost:${port}`;
       window.location.href = url;
     }
-    setSideNavExpanded(false);
+    setSideNavExpanded(false); // Close sidebar after click
   };
 
   // Focus search input when sidebar expands
@@ -87,7 +89,7 @@ function App() {
             <HeaderName prefix="">TripPlanner</HeaderName>
             <HeaderGlobalBar>
               <HeaderGlobalAction
-                data-element="settings-button"
+                data-element="settings-toggle"
                 aria-label="Settings"
                 tooltipAlignment="end"
                 onClick={() => setSettingsModalOpen(true)}
@@ -128,7 +130,7 @@ function App() {
                       filteredApplications.map((app, index) => (
                         <div
                           key={index}
-                          className={`application-item ${app === 'TripPlanner' ? 'current-app' : ''}`}
+                          className="application-item"
                           onClick={() => handleAppClick(app)}
                           role="button"
                           tabIndex={0}
@@ -156,7 +158,7 @@ function App() {
           </div>
         </div>
 
-        {/* Settings modal */}
+        {/* Settings Modal */}
         <SettingsModal
           open={settingsModalOpen}
           onClose={() => setSettingsModalOpen(false)}
