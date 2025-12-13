@@ -36,7 +36,26 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (process.env.NODE_ENV === 'development') {
       console.error('ErrorBoundary caught an error:', error, errorInfo);
     }
+
     // TODO: Send error to logging service in production
+    // Example integration:
+    // if (process.env.NODE_ENV === 'production') {
+    //   logErrorToService({
+    //     error: {
+    //       name: error.name,
+    //       message: error.message,
+    //       stack: error.stack,
+    //     },
+    //     errorInfo: {
+    //       componentStack: errorInfo.componentStack,
+    //     },
+    //     context: {
+    //       url: window.location.href,
+    //       userAgent: navigator.userAgent,
+    //       timestamp: new Date().toISOString(),
+    //     },
+    //   });
+    // }
   }
 
   render(): ReactNode {
