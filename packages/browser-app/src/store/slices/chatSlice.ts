@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { QuickAction } from '../../types/chat';
 
 export interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp?: string;
   read?: boolean;
+  suggestions?: QuickAction[];
 }
 
 export interface ChatState {

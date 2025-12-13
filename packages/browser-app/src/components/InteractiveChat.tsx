@@ -14,6 +14,8 @@ import {
   setIsLoading,
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
+import { INTERACTIVE_QUICK_ACTIONS } from '../config/quickActions';
+import { SEND_ANIMATION_DELAY_MS } from '../config/ui';
 import MarkdownMessage from './MarkdownMessage';
 import './InteractiveChat.css';
 
@@ -59,45 +61,12 @@ function InteractiveChat() {
     }
   };
 
-  const quickActions = [
-    {
-      label: 'Plan a Trip',
-      icon: '✈️',
-      prompt: 'Help me plan a trip',
-      type: 'blue' as const
-    },
-    {
-      label: 'Create Itinerary',
-      icon: '📅',
-      prompt: 'Create an itinerary for my trip',
-      type: 'purple' as const
-    },
-    {
-      label: 'Find Activities',
-      icon: '🎯',
-      prompt: 'What are the best activities in my destination?',
-      type: 'cyan' as const
-    },
-    {
-      label: 'Book Hotels',
-      icon: '🏨',
-      prompt: 'Help me find and book accommodations',
-      type: 'teal' as const
-    },
-    {
-      label: 'Travel Tips',
-      icon: '💡',
-      prompt: 'Give me travel tips for my destination',
-      type: 'magenta' as const
-    },
-  ];
-
   const handleQuickAction = (prompt: string) => {
     dispatch(setDraftInput(prompt));
     // Focus the input to show the populated text
     setTimeout(() => {
       handleSend();
-    }, 300);
+    }, SEND_ANIMATION_DELAY_MS);
   };
 
   return (
@@ -113,7 +82,7 @@ function InteractiveChat() {
             <div className="quick-actions">
               <div className="quick-actions-label">Quick Actions</div>
               <div className="quick-actions-grid">
-                {quickActions.map((action, idx) => (
+                {INTERACTIVE_QUICK_ACTIONS.map((action, idx) => (
                   <Tag
                     key={idx}
                     type={action.type}
@@ -173,7 +142,6 @@ function InteractiveChat() {
               <IconButton
                 label="Voice input"
                 onClick={() => {
-                  console.log('[InteractiveChat] Microphone button clicked - functionality to be implemented');
                   // TODO: Implement voice input functionality
                 }}
                 disabled={isLoading}
