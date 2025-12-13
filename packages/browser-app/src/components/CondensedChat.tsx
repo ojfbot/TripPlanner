@@ -16,6 +16,8 @@ import {
   setIsExpanded,
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
+import { CONDENSED_QUICK_ACTIONS } from '../config/quickActions';
+import { FOCUS_DELAY_MS, SEND_ANIMATION_DELAY_MS } from '../config/ui';
 import MarkdownMessage from './MarkdownMessage';
 import './CondensedChat.css';
 
@@ -32,35 +34,16 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Quick actions for welcome message
-  const quickActions = [
-    {
-      label: 'Plan a Trip',
-      icon: '✈️',
-      prompt: 'Help me plan a trip',
-      type: 'blue' as const
-    },
-    {
-      label: 'Create Itinerary',
-      icon: '📅',
-      prompt: 'Create an itinerary for my trip',
-      type: 'purple' as const
-    },
-    {
-      label: 'Find Activities',
-      icon: '🎯',
-      prompt: 'What are the best activities in my destination?',
-      type: 'cyan' as const
-    },
-    {
-      label: 'Travel Tips',
-      icon: '💡',
-      prompt: 'Give me travel tips for my destination',
-      type: 'magenta' as const
-    },
-  ];
-
-  // Auto-scroll to bottom
+  /**
+   * Auto-scroll to bottom with double requestAnimationFrame
+   *
+   * Using double RAF ensures the scroll happens after:
+   * 1. First RAF: Browser finishes current layout/paint
+   * 2. Second RAF: DOM updates are committed and heights are final
+   *
+   * This prevents scroll-to-bottom from running before message heights
+   * are calculated, which would result in not scrolling far enough.
+   */
   const scrollToBottom = useCallback((smooth = false) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -84,7 +67,7 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
     if (isExpanded) {
       setTimeout(() => {
         textAreaRef.current?.focus();
-      }, 100);
+      }, FOCUS_DELAY_MS);
       scrollToBottom(true);
     }
   }, [isExpanded, scrollToBottom]);
@@ -119,7 +102,7 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
     dispatch(setDraftInput(prompt));
     setTimeout(() => {
       handleSend(prompt);
-    }, 300);
+    }, SEND_ANIMATION_DELAY_MS);
   }, [dispatch, handleSend]);
 
   const handleToggleExpand = () => {
@@ -187,7 +170,7 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
               <div className="quick-actions-condensed">
                 <div className="quick-actions-label">Quick Actions</div>
                 <div className="quick-actions-grid-condensed">
-                  {quickActions.map((action, idx) => (
+                  {CONDENSED_QUICK_ACTIONS.map((action, idx) => (
                     <Tag
                       key={idx}
                       type={action.type}
@@ -258,7 +241,7 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
             <IconButton
               label="Voice input"
               onClick={() => {
-                console.log('[CondensedChat] Microphone button clicked - functionality to be implemented');
+                // TODO: Implement voice input functionality
               }}
               disabled={isLoading}
               className="microphone-button-input-condensed"
