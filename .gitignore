@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# pnpm
+.pnpm-store/
+.pnpm-debug.log
+# Note: pnpm-lock.yaml IS committed for reproducible builds
+# DO NOT add it to .gitignore
+
+# npm (legacy - to be removed after migration)
+package-lock.json
+
+# Build outputs (NEVER commit build artifacts)
+dist/
+build/
+/dist
+/build
+*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.local
+.env.production
+env.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary
+temp/
+tmp/
+*.tmp
+
+# Personal data
+personal/
+
+# Husky
+.husky/_

@@ -1,0 +1,37 @@
+{
+  "name": "@tripplanner/api",
+  "version": "0.1.0",
+  "description": "Express API server for TripPlanner",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@tripplanner/agent-graph": "workspace:*",
+    "express": "catalog:",
+    "cors": "catalog:",
+    "helmet": "catalog:",
+    "express-rate-limit": "catalog:",
+    "better-sqlite3": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@types/node": "catalog:",
+    "@types/express": "catalog:",
+    "@types/cors": "catalog:",
+    "@types/better-sqlite3": "catalog:",
+    "tsx": "catalog:"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

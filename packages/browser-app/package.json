@@ -1,0 +1,38 @@
+{
+  "name": "@tripplanner/browser-app",
+  "version": "0.1.0",
+  "description": "React + Carbon Design System UI for TripPlanner",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@carbon/icons-react": "catalog:",
+    "@carbon/react": "catalog:",
+    "@carbon/styles": "catalog:",
+    "@reduxjs/toolkit": "catalog:",
+    "axios": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-markdown": "catalog:",
+    "react-redux": "catalog:",
+    "rehype-highlight": "catalog:",
+    "remark-gfm": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "sass": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
