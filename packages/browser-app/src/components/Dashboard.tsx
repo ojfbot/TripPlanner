@@ -18,6 +18,7 @@ import ItinerariesLibrary from './ItinerariesLibrary';
 import IntegrationsLibrary from './IntegrationsLibrary';
 import CondensedChat from './CondensedChat';
 import ThreadSidebar from './ThreadSidebar';
+import ErrorBoundary from './ErrorBoundary';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -30,7 +31,11 @@ function Dashboard() {
   const renderTabContent = (tabKey: TabKey) => {
     switch (tabKey) {
       case TabKey.INTERACTIVE:
-        return <InteractiveChat />;
+        return (
+          <ErrorBoundary>
+            <InteractiveChat />
+          </ErrorBoundary>
+        );
       case TabKey.TRIPS:
         return <TripsLibrary />;
       case TabKey.ITINERARIES:
@@ -110,7 +115,9 @@ function Dashboard() {
 
       {/* Show condensed chat on all non-Interactive tabs */}
       {currentTab !== TabKey.INTERACTIVE && (
-        <CondensedChat sidebarExpanded={showThreadSidebar && sidebarExpanded} />
+        <ErrorBoundary>
+          <CondensedChat sidebarExpanded={showThreadSidebar && sidebarExpanded} />
+        </ErrorBoundary>
       )}
     </>
   );

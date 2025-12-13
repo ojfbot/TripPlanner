@@ -19,6 +19,8 @@ import {
 import { CONDENSED_QUICK_ACTIONS } from '../config/quickActions';
 import { FOCUS_DELAY_MS, SEND_ANIMATION_DELAY_MS } from '../config/ui';
 import MarkdownMessage from './MarkdownMessage';
+import '../styles/variables.css';
+import '../styles/animations.css';
 import './CondensedChat.css';
 
 interface CondensedChatProps {
@@ -65,11 +67,13 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   // Auto-focus input when expanding
   useEffect(() => {
     if (isExpanded) {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         textAreaRef.current?.focus();
       }, FOCUS_DELAY_MS);
       scrollToBottom(true);
+      return () => clearTimeout(timeoutId);
     }
+    return undefined;
   }, [isExpanded, scrollToBottom]);
 
   // Auto-scroll when messages change
@@ -85,7 +89,12 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
 
     const userMessage = textToSend;
     dispatch(addMessage({ role: 'user', content: userMessage }));
-    dispatch(setDraftInput(''));
+
+    // Only clear draft if message came from draft input (not from quick action)
+    if (!messageText) {
+      dispatch(setDraftInput(''));
+    }
+
     dispatch(setIsLoading(true));
 
     // TODO: Connect to API

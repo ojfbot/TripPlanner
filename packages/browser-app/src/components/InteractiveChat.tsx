@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import {
   TextArea,
   Button,
@@ -17,6 +17,8 @@ import {
 import { INTERACTIVE_QUICK_ACTIONS } from '../config/quickActions';
 import { SEND_ANIMATION_DELAY_MS } from '../config/ui';
 import MarkdownMessage from './MarkdownMessage';
+import '../styles/variables.css';
+import '../styles/animations.css';
 import './InteractiveChat.css';
 
 function InteractiveChat() {
@@ -61,13 +63,13 @@ function InteractiveChat() {
     }
   };
 
-  const handleQuickAction = (prompt: string) => {
+  const handleQuickAction = useCallback((prompt: string) => {
     dispatch(setDraftInput(prompt));
     // Focus the input to show the populated text
     setTimeout(() => {
       handleSend();
     }, SEND_ANIMATION_DELAY_MS);
-  };
+  }, [dispatch, handleSend]);
 
   return (
     <div className="interactive-chat">
