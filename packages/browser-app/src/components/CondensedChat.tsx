@@ -17,7 +17,7 @@ import {
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
 import { CONDENSED_QUICK_ACTIONS } from '../config/quickActions';
-import { FOCUS_DELAY_MS, SEND_ANIMATION_DELAY_MS } from '../config/ui';
+import { FOCUS_DELAY_MS, UNREAD_BADGE_TEXT } from '../config/ui';
 import MarkdownMessage from './MarkdownMessage';
 import '../styles/variables.css';
 import '../styles/animations.css';
@@ -34,7 +34,6 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   );
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   /**
    * Auto-scroll to bottom with double requestAnimationFrame
@@ -108,11 +107,9 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   }, [draftInput, isLoading, dispatch]);
 
   const handleQuickAction = useCallback((prompt: string) => {
-    dispatch(setDraftInput(prompt));
-    setTimeout(() => {
-      handleSend(prompt);
-    }, SEND_ANIMATION_DELAY_MS);
-  }, [dispatch, handleSend]);
+    // Don't set draft, just send directly to avoid input flash
+    handleSend(prompt);
+  }, [handleSend]);
 
   const handleToggleExpand = () => {
     if (!isExpanded) {
@@ -150,7 +147,7 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
           <ChatBot size={20} />
           <span className="header-title">AI Assistant</span>
           {!isExpanded && unreadCount > 0 && (
-            <span className="unread-badge">new</span>
+            <span className="unread-badge">{UNREAD_BADGE_TEXT}</span>
           )}
         </div>
         <div className="header-actions">
@@ -184,8 +181,16 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
                       key={idx}
                       type={action.type}
                       onClick={() => handleQuickAction(action.prompt)}
+                      onKeyDown={(e: React.KeyboardEvent) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleQuickAction(action.prompt);
+                        }
+                      }}
                       className="quick-action-tag"
                       size="sm"
+                      role="button"
+                      tabIndex={0}
                     >
                       <span className="action-icon">{action.icon}</span>
                       {action.label}
@@ -195,8 +200,8 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
               </div>
             </div>
           )}
-          {messages.map((msg, idx) => (
-            <Tile key={idx} className={`message-tile ${msg.role}`}>
+          {messages.map((msg) => (
+            <Tile key={msg.id} className={`message-tile ${msg.role}`}>
               <div className="message-header">
                 <strong>{msg.role === 'user' ? '👤 You' : '🤖 Assistant'}</strong>
               </div>
@@ -234,7 +239,6 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
             />
           ) : (
             <TextInput
-              ref={inputRef}
               id="condensed-input"
               labelText=""
               placeholder="Ask me anything..."

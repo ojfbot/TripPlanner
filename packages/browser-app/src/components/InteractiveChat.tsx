@@ -15,7 +15,6 @@ import {
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
 import { INTERACTIVE_QUICK_ACTIONS } from '../config/quickActions';
-import { SEND_ANIMATION_DELAY_MS } from '../config/ui';
 import MarkdownMessage from './MarkdownMessage';
 import '../styles/variables.css';
 import '../styles/animations.css';
@@ -38,7 +37,7 @@ function InteractiveChat() {
     }
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     if (!draftInput.trim() || isLoading) return;
 
     const userMessage = draftInput;
@@ -54,7 +53,7 @@ function InteractiveChat() {
       }));
       dispatch(setIsLoading(false));
     }, 1000);
-  };
+  }, [draftInput, isLoading, dispatch]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -64,12 +63,19 @@ function InteractiveChat() {
   };
 
   const handleQuickAction = useCallback((prompt: string) => {
-    dispatch(setDraftInput(prompt));
-    // Focus the input to show the populated text
+    // Send message directly without setting draft input
+    dispatch(addMessage({ role: 'user', content: prompt }));
+    dispatch(setIsLoading(true));
+
+    // TODO: Connect to API
     setTimeout(() => {
-      handleSend();
-    }, SEND_ANIMATION_DELAY_MS);
-  }, [dispatch, handleSend]);
+      dispatch(addMessage({
+        role: 'assistant',
+        content: 'This is a placeholder response. API integration coming in Phase 2!'
+      }));
+      dispatch(setIsLoading(false));
+    }, 1000);
+  }, [dispatch]);
 
   return (
     <div className="interactive-chat">
@@ -89,8 +95,16 @@ function InteractiveChat() {
                     key={idx}
                     type={action.type}
                     onClick={() => handleQuickAction(action.prompt)}
+                    onKeyDown={(e: React.KeyboardEvent) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleQuickAction(action.prompt);
+                      }
+                    }}
                     className="quick-action-tag"
                     size="sm"
+                    role="button"
+                    tabIndex={0}
                   >
                     <span className="action-icon">{action.icon}</span>
                     {action.label}
@@ -100,8 +114,8 @@ function InteractiveChat() {
             </div>
           </div>
         )}
-        {messages.map((msg, idx) => (
-          <Tile key={idx} className={`message-tile ${msg.role}`}>
+        {messages.map((msg) => (
+          <Tile key={msg.id} className={`message-tile ${msg.role}`}>
             <div className="message-header">
               <strong>{msg.role === 'user' ? '👤 You' : '🤖 Assistant'}</strong>
             </div>

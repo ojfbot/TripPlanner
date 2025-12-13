@@ -19,3 +19,8 @@ export const SIDEBAR_WIDTH_PX = 320;
  */
 export const CONDENSED_CHAT_WIDTH_PX = 400;
 export const CONDENSED_CHAT_MAX_HEIGHT_PX = 650;
+
+/**
+ * UI text constants
+ */
+export const UNREAD_BADGE_TEXT = 'new';

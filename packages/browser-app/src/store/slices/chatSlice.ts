@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { QuickAction } from '../../types/chat';
 
 export interface Message {
+  id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp?: string;
@@ -29,11 +30,13 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    addMessage: (state, action: PayloadAction<Message>) => {
-      const message = {
+    addMessage: (state, action: PayloadAction<Omit<Message, 'id' | 'timestamp' | 'read'>>) => {
+      const timestamp = new Date().toISOString();
+      const message: Message = {
         ...action.payload,
-        timestamp: action.payload.timestamp || new Date().toISOString(),
-        read: action.payload.read !== undefined ? action.payload.read : false,
+        id: `${action.payload.role}-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
+        timestamp,
+        read: false,
       };
       state.messages.push(message);
       if (message.role === 'assistant' && !message.read) {
