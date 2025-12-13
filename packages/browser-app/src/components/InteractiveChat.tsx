@@ -123,10 +123,7 @@ function InteractiveChat() {
               {msg.role === 'user' ? (
                 <div className="user-message">{msg.content}</div>
               ) : (
-                <MarkdownMessage
-                  content={msg.content}
-                  suggestions={msg.suggestions}
-                />
+                <MarkdownMessage content={msg.content} />
               )}
             </div>
           </Tile>
