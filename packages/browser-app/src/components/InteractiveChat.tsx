@@ -2,9 +2,11 @@ import { useRef, useEffect } from 'react';
 import {
   TextArea,
   Button,
+  IconButton,
   Tile,
+  Tag,
 } from '@carbon/react';
-import { SendAlt } from '@carbon/icons-react';
+import { SendAlt, Microphone } from '@carbon/icons-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   addMessage,
@@ -44,7 +46,7 @@ function InteractiveChat() {
     setTimeout(() => {
       dispatch(addMessage({
         role: 'assistant',
-        content: 'This is a placeholder response. API integration coming soon!\n\nI can help you plan amazing trips once the AI backend is connected.'
+        content: 'This is a placeholder response. API integration coming in Phase 2!'
       }));
       dispatch(setIsLoading(false));
     }, 1000);
@@ -57,25 +59,89 @@ function InteractiveChat() {
     }
   };
 
+  const quickActions = [
+    {
+      label: 'Plan a Trip',
+      icon: '✈️',
+      prompt: 'Help me plan a trip',
+      type: 'blue' as const
+    },
+    {
+      label: 'Create Itinerary',
+      icon: '📅',
+      prompt: 'Create an itinerary for my trip',
+      type: 'purple' as const
+    },
+    {
+      label: 'Find Activities',
+      icon: '🎯',
+      prompt: 'What are the best activities in my destination?',
+      type: 'cyan' as const
+    },
+    {
+      label: 'Book Hotels',
+      icon: '🏨',
+      prompt: 'Help me find and book accommodations',
+      type: 'teal' as const
+    },
+    {
+      label: 'Travel Tips',
+      icon: '💡',
+      prompt: 'Give me travel tips for my destination',
+      type: 'magenta' as const
+    },
+  ];
+
+  const handleQuickAction = (prompt: string) => {
+    dispatch(setDraftInput(prompt));
+    // Focus the input to show the populated text
+    setTimeout(() => {
+      handleSend();
+    }, 300);
+  };
+
   return (
     <div className="interactive-chat">
       <div className="chat-messages" ref={messagesContainerRef}>
         {messages.length === 0 && (
-          <div className="empty-state">
-            <h3>Welcome to TripPlanner!</h3>
-            <p>Start a conversation to plan your next adventure.</p>
+          <div className="welcome-message">
+            <h2>Welcome to TripPlanner</h2>
+            <p>
+              Your AI-powered travel companion. Plan amazing trips, create detailed itineraries,
+              and discover the best experiences for your next adventure.
+            </p>
+            <div className="quick-actions">
+              <div className="quick-actions-label">Quick Actions</div>
+              <div className="quick-actions-grid">
+                {quickActions.map((action, idx) => (
+                  <Tag
+                    key={idx}
+                    type={action.type}
+                    onClick={() => handleQuickAction(action.prompt)}
+                    className="quick-action-tag"
+                    size="sm"
+                  >
+                    <span className="action-icon">{action.icon}</span>
+                    {action.label}
+                  </Tag>
+                ))}
+              </div>
+            </div>
           </div>
         )}
         {messages.map((msg, idx) => (
           <Tile key={idx} className={`message-tile ${msg.role}`}>
             <div className="message-header">
-              <strong>{msg.role === 'user' ? '👤 You' : '🤖 TripPlanner'}</strong>
+              <strong>{msg.role === 'user' ? '👤 You' : '🤖 Assistant'}</strong>
             </div>
             <div className="message-content">
               {msg.role === 'user' ? (
                 <div className="user-message">{msg.content}</div>
               ) : (
-                <MarkdownMessage content={msg.content} />
+                <MarkdownMessage
+                  content={msg.content}
+                  suggestions={msg.suggestions}
+                />
               )}
             </div>
           </Tile>
@@ -83,31 +149,54 @@ function InteractiveChat() {
         {isLoading && (
           <div className="message assistant">
             <div className="message-content loading">
-              Planning your trip...
+              Thinking...
             </div>
           </div>
         )}
       </div>
 
       <div className="chat-input-container">
-        <TextArea
-          id="chat-input"
-          labelText=""
-          placeholder="Ask TripPlanner to help plan your next trip..."
-          value={draftInput}
-          onChange={(e) => dispatch(setDraftInput(e.target.value))}
-          onKeyDown={handleKeyDown}
-          rows={3}
-          disabled={isLoading}
-        />
-        <Button
-          kind="primary"
-          renderIcon={SendAlt}
-          onClick={handleSend}
-          disabled={!draftInput.trim() || isLoading}
-        >
-          Send
-        </Button>
+        <div className="input-wrapper">
+          <div className="textarea-container">
+            <TextArea
+              id="chat-input"
+              labelText="Message"
+              placeholder="Ask about trip planning, itineraries, activities..."
+              value={draftInput}
+              onChange={(e) => dispatch(setDraftInput(e.target.value))}
+              onKeyDown={handleKeyDown}
+              rows={3}
+              disabled={isLoading}
+              data-element="chat-input"
+            />
+            <div className="input-actions">
+              <IconButton
+                label="Voice input"
+                onClick={() => {
+                  console.log('[InteractiveChat] Microphone button clicked - functionality to be implemented');
+                  // TODO: Implement voice input functionality
+                }}
+                disabled={isLoading}
+                className="microphone-button-input"
+                kind="ghost"
+                size="sm"
+              >
+                <Microphone size={20} />
+              </IconButton>
+              <Button
+                renderIcon={SendAlt}
+                onClick={handleSend}
+                disabled={!draftInput.trim() || isLoading}
+                className="send-button-inline"
+                kind="primary"
+                size="sm"
+                hasIconOnly
+                iconDescription="Send message"
+                data-element="chat-send-button"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
