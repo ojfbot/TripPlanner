@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { QuickAction } from '../../types/chat';
 
 export interface Message {
   id: string;
@@ -7,7 +6,6 @@ export interface Message {
   content: string;
   timestamp?: string;
   read?: boolean;
-  suggestions?: QuickAction[];
 }
 
 export interface ChatState {
