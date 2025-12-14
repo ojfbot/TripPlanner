@@ -1,0 +1,76 @@
+/* File-viewer-style list for Day/Week Panel */
+.day-week-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Customize Carbon Accordion for file-viewer style */
+.day-week-panel .cds--accordion {
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.day-week-panel .cds--accordion__item {
+  border-bottom: 1px solid var(--cds-border-subtle);
+  transition: background 0.2s;
+}
+
+.day-week-panel .cds--accordion__item:hover {
+  background: var(--cds-layer-hover);
+}
+
+.day-week-panel .cds--accordion__item:last-child {
+  border-bottom: none;
+}
+
+.day-week-panel .cds--accordion__heading {
+  padding: 0.75rem 1rem;
+  min-height: unset;
+}
+
+.day-week-panel .cds--accordion__title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.day-week-panel .cds--accordion__content {
+  padding: 0 1rem 1rem 3rem;
+  font-size: 0.875rem;
+}
+
+/* Status indicators inline with title */
+.item-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+/* Add file-browser-like row styling */
+.day-week-panel .cds--accordion__item--active {
+  background: var(--cds-layer-selected);
+}
+
+/* Custom scrollbar for day chooser */
+.day-week-panel [style*="overflowX"] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cds-border-subtle) transparent;
+}
+
+.day-week-panel [style*="overflowX"]::-webkit-scrollbar {
+  height: 6px;
+}
+
+.day-week-panel [style*="overflowX"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.day-week-panel [style*="overflowX"]::-webkit-scrollbar-thumb {
+  background-color: var(--cds-border-subtle);
+  border-radius: 3px;
+}

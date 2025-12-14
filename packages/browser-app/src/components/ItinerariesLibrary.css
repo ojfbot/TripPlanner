@@ -1,0 +1,228 @@
+.itineraries-library {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  padding-bottom: 5rem;
+}
+
+/* Main Header */
+.itinerary-main-header {
+  margin-bottom: 1rem;
+}
+
+.itinerary-main-header h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.itinerary-subtext {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--cds-text-secondary);
+}
+
+/* Timeline Bar - More Prominent */
+.timeline-bar-container {
+  margin-bottom: 1rem;
+}
+
+.timeline-bar-inline {
+  display: flex;
+  gap: 4px;
+  height: 48px;
+  background: var(--cds-layer-02);
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 4px;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.timeline-segment-inline {
+  flex: 1;
+  background: var(--cds-layer-01);
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 2px;
+  transition: background 0.11s, border-color 0.11s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.timeline-segment-inline.active {
+  background: var(--cds-link-primary);
+  border-color: var(--cds-link-primary);
+}
+
+.timeline-segment-inline.active .day-label {
+  color: white;
+  font-weight: 600;
+}
+
+.timeline-segment-inline:hover {
+  background: var(--cds-layer-hover);
+  border-color: var(--cds-border-strong);
+}
+
+.day-label {
+  font-size: 0.75rem;
+  color: var(--cds-text-secondary);
+  font-weight: 500;
+}
+
+/* Filter Cards Row */
+.filter-cards-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-card-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--cds-layer-01);
+  border: 1px solid var(--cds-border-subtle);
+  cursor: pointer;
+  transition: background 0.11s, border-color 0.11s;
+}
+
+.filter-card-inline:hover {
+  background: var(--cds-layer-hover);
+  border-color: var(--cds-border-strong);
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--cds-text-primary);
+}
+
+.filter-count {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--cds-text-secondary);
+}
+
+/* File-list-style Daily Viewer - Limited Height */
+.daily-file-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--cds-border-subtle);
+  background: var(--cds-layer-01);
+}
+
+.day-section {
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.day-section:last-child {
+  border-bottom: none;
+}
+
+.day-header {
+  padding: 0.75rem 1rem;
+  background: var(--cds-layer-02);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--cds-border-subtle);
+}
+
+.day-items-list {
+  /* No padding - items fill full width */
+}
+
+.itinerary-item-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--cds-border-subtle);
+  transition: background 0.11s;
+  cursor: pointer;
+}
+
+.itinerary-item-row:last-child {
+  border-bottom: none;
+}
+
+.itinerary-item-row:hover {
+  background: var(--cds-layer-hover);
+}
+
+.item-time {
+  font-size: 0.8125rem;
+  color: var(--cds-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.item-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.item-tags {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.item-location {
+  font-size: 0.8125rem;
+  color: var(--cds-text-secondary);
+  text-align: right;
+}
+
+.day-empty {
+  padding: 1rem;
+  color: var(--cds-text-secondary);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* Scrollbar styling */
+.daily-file-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.daily-file-list::-webkit-scrollbar-track {
+  background: var(--cds-layer-02);
+}
+
+.daily-file-list::-webkit-scrollbar-thumb {
+  background: var(--cds-border-subtle);
+  border-radius: 4px;
+}
+
+.daily-file-list::-webkit-scrollbar-thumb:hover {
+  background: var(--cds-border-strong);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .itineraries-library {
+    padding: 1rem;
+    padding-bottom: 6rem;
+  }
+  
+  .itinerary-item-row {
+    grid-template-columns: 60px 1fr;
+    gap: 0.5rem;
+  }
+  
+  .item-tags,
+  .item-location {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+  }
+  
+  .item-location {
+    text-align: left;
+  }
+}
