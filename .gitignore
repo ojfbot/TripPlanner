@@ -60,5 +60,10 @@ personal/
 conversations.json
 **/conversations.json
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
 # Husky
 .husky/_
