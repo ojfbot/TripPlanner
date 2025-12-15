@@ -1,5 +1,5 @@
 import { Button, Tag, Tile, Accordion, AccordionItem } from '@carbon/react';
-import { ArrowLeft, Checkmark, Time, Location } from '@carbon/icons-react';
+import { ArrowLeft } from '@carbon/icons-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { backToOverview, setSelectedDayIndex } from '../../store/slices/itinerarySlice';
 import './DayWeekPanel.css';
@@ -37,22 +37,23 @@ function DayWeekPanel() {
     };
   });
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'transit': return 'blue';
-      case 'meal': return 'red';
-      case 'lodging': return 'purple';
-      case 'reservation': return 'green';
-      case 'activity': return 'cyan';
-      default: return 'gray';
-    }
-  };
+  // Helper functions for future use
+  // const getCategoryColor = (category: string) => {
+  //   switch (category) {
+  //     case 'transit': return 'blue';
+  //     case 'meal': return 'red';
+  //     case 'lodging': return 'purple';
+  //     case 'reservation': return 'green';
+  //     case 'activity': return 'cyan';
+  //     default: return 'gray';
+  //   }
+  // };
 
-  const getStatusIcon = (status?: string) => {
-    if (status === 'confirmed') return <Checkmark size={16} />;
-    if (status === 'pending') return <Time size={16} />;
-    return null;
-  };
+  // const getStatusIcon = (status?: string) => {
+  //   if (status === 'confirmed') return <Checkmark size={16} />;
+  //   if (status === 'pending') return <Time size={16} />;
+  //   return null;
+  // };
 
   return (
     <div>
