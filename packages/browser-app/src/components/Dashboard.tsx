@@ -25,6 +25,7 @@ function Dashboard() {
   const dispatch = useAppDispatch();
   const currentTab = useAppSelector(state => state.navigation.currentTab);
   const currentTabIndex = useAppSelector(state => state.navigation.currentTabIndex);
+  const tripTitle = useAppSelector(state => state.trip.title);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const showThreadSidebar = true;
 
@@ -62,7 +63,7 @@ function Dashboard() {
         data-element="app-container"
       >
         <div className="dashboard-header">
-          <Heading>TripPlanner Dashboard</Heading>
+          <Heading>{tripTitle}</Heading>
 
           <div className="dashboard-header-actions">
             {/* Thread sidebar toggle button */}

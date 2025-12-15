@@ -14,8 +14,10 @@ import {
   setIsLoading,
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
+import { TabKey } from '../models/navigation';
 import { INTERACTIVE_QUICK_ACTIONS } from '../config/quickActions';
 import MarkdownMessage from './MarkdownMessage';
+import ImportAgentBadge from './ImportAgentBadge';
 import '../styles/variables.css';
 import '../styles/animations.css';
 import './InteractiveChat.css';
@@ -25,11 +27,15 @@ function InteractiveChat() {
   const draftInput = useAppSelector(state => state.chat.draftInput);
   const messages = useAppSelector(state => state.chat.messages);
   const isLoading = useAppSelector(state => state.chat.isLoading);
+  const currentTab = useAppSelector(state => state.navigation.currentTab);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
+  // Mark messages as read when user is on Interactive tab
   useEffect(() => {
-    dispatch(markMessagesAsRead());
-  }, [dispatch]);
+    if (currentTab === TabKey.INTERACTIVE && messages.length > 0) {
+      dispatch(markMessagesAsRead());
+    }
+  }, [currentTab, dispatch, messages.length]);
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -52,6 +58,8 @@ function InteractiveChat() {
         content: 'This is a placeholder response. API integration coming in Phase 2!'
       }));
       dispatch(setIsLoading(false));
+      // Mark messages as read since user is on Interactive tab
+      dispatch(markMessagesAsRead());
     }, 1000);
   }, [draftInput, isLoading, dispatch]);
 
@@ -74,6 +82,8 @@ function InteractiveChat() {
         content: 'This is a placeholder response. API integration coming in Phase 2!'
       }));
       dispatch(setIsLoading(false));
+      // Mark messages as read since user is on Interactive tab
+      dispatch(markMessagesAsRead());
     }, 1000);
   }, [dispatch]);
 
@@ -90,6 +100,7 @@ function InteractiveChat() {
             <div className="quick-actions">
               <div className="quick-actions-label">Quick Actions</div>
               <div className="quick-actions-grid">
+                <ImportAgentBadge />
                 {INTERACTIVE_QUICK_ACTIONS.map((action, idx) => (
                   <Tag
                     key={idx}

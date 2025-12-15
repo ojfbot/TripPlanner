@@ -64,13 +64,18 @@
 .dashboard-wrapper .cds--tab-content {
   overflow-y: auto;
   padding: 24px;
-  max-height: calc(100vh - 48px - 72px - 48px);
+  padding-bottom: 100px;
+  max-height: calc(100vh - 280px);
+  height: auto;
 }
 
 /* Interactive tab has no padding (InteractiveChat handles its own layout) */
 .dashboard-wrapper .cds--tab-content:first-of-type {
   padding: 0;
+  padding-bottom: 0;
   overflow: hidden;
+  max-height: calc(100vh - 280px);
+  height: min(60vh, calc(100vh - 280px));
 }
 
 @media (max-width: 768px) {
