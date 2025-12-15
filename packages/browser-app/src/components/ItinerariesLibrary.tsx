@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Heading, Tag, IconButton, Tooltip, Dropdown } from '@carbon/react';
-import { ViewOff, View } from '@carbon/icons-react';
+import { Heading, Tag, IconButton, Tooltip, Dropdown, Button } from '@carbon/react';
+import { ViewOff, View, Events } from '@carbon/icons-react';
 import { Airplane, Dining, Calendar, Building } from '@carbon/pictograms-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setCurrentItinerary } from '../store/slices/itinerarySlice';
 import { fetchDocuments } from '../store/slices/documentsSlice';
 import { documentsToItineraries } from '../utils/itineraryTransform';
 import { mockItinerary } from '../data/mockItinerary';
+import TimelineView from './itineraries/TimelineView';
 import './ItinerariesLibrary.css';
 
 function ItinerariesLibrary() {
@@ -14,6 +15,7 @@ function ItinerariesLibrary() {
   const currentItinerary = useAppSelector((state) => state.itinerary.currentItinerary);
   const { documents, isLoading } = useAppSelector((state) => state.documents);
   const [detailedView, setDetailedView] = useState(true);
+  const [viewMode, setViewMode] = useState<'table' | 'timeline'>('table');
   const [availableItineraries, setAvailableItineraries] = useState<any[]>([]);
 
   // Fetch documents on mount and transform to itineraries
@@ -165,23 +167,33 @@ function ItinerariesLibrary() {
       <div className="itinerary-main-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
           <Heading>Itineraries — {currentItinerary.title}</Heading>
-          {availableItineraries.length > 1 && (
-            <Dropdown
-              id="itinerary-selector"
-              titleText=""
-              label="Switch itinerary"
-              items={availableItineraries}
-              itemToString={(item) => (item ? item.title : '')}
-              selectedItem={currentItinerary}
-              onChange={({ selectedItem }) => {
-                if (selectedItem) {
-                  dispatch(setCurrentItinerary(selectedItem));
-                }
-              }}
-              size="md"
-              style={{ minWidth: '250px' }}
-            />
-          )}
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <Button
+              kind={viewMode === 'timeline' ? 'primary' : 'tertiary'}
+              size="sm"
+              renderIcon={ChartTimeline}
+              onClick={() => setViewMode(viewMode === 'timeline' ? 'table' : 'timeline')}
+            >
+              {viewMode === 'timeline' ? 'Table View' : 'Timeline View'}
+            </Button>
+            {availableItineraries.length > 1 && (
+              <Dropdown
+                id="itinerary-selector"
+                titleText=""
+                label="Switch itinerary"
+                items={availableItineraries}
+                itemToString={(item) => (item ? item.title : '')}
+                selectedItem={currentItinerary}
+                onChange={({ selectedItem }) => {
+                  if (selectedItem) {
+                    dispatch(setCurrentItinerary(selectedItem));
+                  }
+                }}
+                size="md"
+                style={{ minWidth: '250px' }}
+              />
+            )}
+          </div>
         </div>
         <p className="itinerary-subtext">
           {tripLength} days · {currentItinerary.destinations.length} {currentItinerary.destinations.length === 1 ? 'location' : 'locations'}
@@ -189,8 +201,13 @@ function ItinerariesLibrary() {
         </p>
       </div>
 
-      {/* Sleek Timeline Bar */}
-      <div className="timeline-bar-container">
+      {/* Conditional rendering based on view mode */}
+      {viewMode === 'timeline' ? (
+        <TimelineView />
+      ) : (
+        <>
+          {/* Sleek Timeline Bar */}
+          <div className="timeline-bar-container">
         <div className="timeline-bar-sleek">
           {Array.from({ length: tripLength }, (_, i) => {
             const dayItems = currentItinerary.items.filter((item) => item.dayIndex === i);
@@ -392,6 +409,8 @@ function ItinerariesLibrary() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
