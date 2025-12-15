@@ -264,7 +264,7 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
       )}
 
       {!isProcessing && (
-        <div style={{ height: '520px', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ height: '70vh', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
           <Tabs selectedIndex={activeTab} onChange={(e) => setActiveTab(e.selectedIndex)} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
             <TabList aria-label="Import options" contained style={{ flexShrink: 0 }}>
               <Tab>Paste Conversation</Tab>
