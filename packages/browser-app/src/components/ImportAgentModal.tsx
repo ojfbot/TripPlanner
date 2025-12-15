@@ -230,7 +230,7 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
       primaryButtonText={isProcessing ? 'Processing...' : 'Import & Extract'}
       secondaryButtonText="Cancel"
       primaryButtonDisabled={!canSubmit()}
-      preventCloseOnClickOutside={isProcessing}
+      preventCloseOnClickOutside={true}
       size="lg"
     >
       {isProcessing && processId && (

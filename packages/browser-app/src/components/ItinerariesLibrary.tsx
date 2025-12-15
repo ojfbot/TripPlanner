@@ -171,7 +171,7 @@ function ItinerariesLibrary() {
             <Button
               kind={viewMode === 'timeline' ? 'primary' : 'tertiary'}
               size="sm"
-              renderIcon={ChartTimeline}
+              renderIcon={Events}
               onClick={() => setViewMode(viewMode === 'timeline' ? 'table' : 'timeline')}
             >
               {viewMode === 'timeline' ? 'Table View' : 'Timeline View'}
