@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import threadsRouter from './routes/threads.js';
 import chatRouter from './routes/chat.js';
+import integrationsRouter from './routes/integrations.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3011;
@@ -14,7 +15,8 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3010',
   credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ limit: '15mb', extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -31,6 +33,7 @@ app.get('/health', (_req: Request, res: Response) => {
 // API routes
 app.use('/api/v1/threads', threadsRouter);
 app.use('/api/v1/chat', chatRouter);
+app.use('/api/v1/integrations', integrationsRouter);
 
 // Start server
 app.listen(PORT, () => {
