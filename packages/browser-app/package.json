@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@carbon/icons-react": "catalog:",
+    "@carbon/pictograms-react": "catalog:",
     "@carbon/react": "catalog:",
     "@carbon/styles": "catalog:",
     "@reduxjs/toolkit": "catalog:",
