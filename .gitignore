@@ -56,5 +56,9 @@ tmp/
 # Personal data
 personal/
 
+# ChatGPT conversation exports (prototype trip planning data)
+conversations.json
+**/conversations.json
+
 # Husky
 .husky/_
