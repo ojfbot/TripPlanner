@@ -1,0 +1,428 @@
+/* Timeline View - Inspired by horizontal dot timeline, adapted for IBM Carbon Design System */
+
+.timeline-view {
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.timeline-header h2 {
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.timeline-subtitle {
+  font-size: 1rem;
+  color: var(--cds-text-secondary);
+  margin-top: 0.5rem;
+}
+
+.timeline-flex-parent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+}
+
+/* Horizontal Timeline Dots Container */
+.timeline-input-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 80%;
+  max-width: 1000px;
+  height: 100px;
+  position: relative;
+  z-index: 0;
+}
+
+/* Individual Timeline Dot */
+.timeline-dot {
+  width: 32px;
+  height: 32px;
+  background-color: var(--cds-interactive);
+  position: relative;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-dot:hover {
+  cursor: pointer;
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(15, 98, 254, 0.3);
+}
+
+.timeline-dot-icon {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Connecting Lines (pseudo-elements) */
+.timeline-dot::before,
+.timeline-dot::after {
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--cds-interactive);
+  width: calc(80vw / 10);  /* Adjust based on number of dots */
+  height: 4px;
+  max-width: calc(1000px / 10);
+  transition: background-color 0.3s ease;
+}
+
+.timeline-dot::before {
+  left: calc(-80vw / 10 + 16px);
+}
+
+.timeline-dot::after {
+  right: calc(-80vw / 10 + 16px);
+}
+
+/* Active Dot Styling */
+.timeline-dot.active {
+  background-color: var(--cds-interactive);
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.4);
+}
+
+.timeline-dot.active::before {
+  background-color: var(--cds-interactive);
+}
+
+.timeline-dot.active::after {
+  background-color: var(--cds-border-subtle);
+}
+
+/* Progressive Coloring - All dots after active are gray */
+.timeline-dot.active ~ .timeline-dot,
+.timeline-dot.active ~ .timeline-dot::before,
+.timeline-dot.active ~ .timeline-dot::after {
+  background-color: var(--cds-border-subtle);
+}
+
+/* Time and Title Labels on Dots */
+.timeline-dot span {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  visibility: hidden;
+}
+
+.timeline-dot span::before,
+.timeline-dot span::after {
+  visibility: visible;
+  position: absolute;
+  left: 50%;
+  white-space: nowrap;
+}
+
+.timeline-dot span::after {
+  content: attr(data-time);
+  top: 40px;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cds-text-secondary);
+}
+
+.timeline-dot span::before {
+  content: attr(data-info);
+  bottom: 50px;
+  width: 120px;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: var(--cds-text-primary);
+  text-align: center;
+  font-weight: 500;
+}
+
+.timeline-dot.active span::before {
+  font-weight: 600;
+  color: var(--cds-interactive);
+}
+
+.timeline-dot.active span::after {
+  font-weight: 700;
+  color: var(--cds-interactive);
+}
+
+/* Description Container */
+.timeline-description-container {
+  width: 80%;
+  max-width: 1000px;
+  margin-top: 120px;
+  min-height: 300px;
+}
+
+.timeline-description-card {
+  display: none;
+  animation: fadeIn 0.4s ease-in;
+}
+
+.timeline-description-card.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card Content */
+.timeline-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.timeline-card-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--cds-layer-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cds-interactive);
+  flex-shrink: 0;
+}
+
+.timeline-card-title-section h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--cds-text-primary);
+}
+
+.timeline-card-time {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--cds-text-secondary);
+  font-weight: 400;
+}
+
+.timeline-card-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--cds-text-secondary);
+  font-size: 0.875rem;
+}
+
+.timeline-card-description {
+  margin: 1rem 0;
+  color: var(--cds-text-primary);
+  line-height: 1.5;
+}
+
+/* AI Insight Section */
+.timeline-ai-section {
+  margin: 1.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--cds-border-subtle);
+}
+
+.timeline-ai-insight {
+  background-color: var(--cds-layer-accent);
+  padding: 1rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--cds-interactive);
+}
+
+.timeline-ai-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--cds-interactive);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.timeline-ai-insight p {
+  margin: 0;
+  color: var(--cds-text-primary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.timeline-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--cds-border-subtle);
+}
+
+/* Empty State */
+.timeline-empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.timeline-empty-state p {
+  margin-bottom: 1.5rem;
+  color: var(--cds-text-secondary);
+}
+
+/* Day Summary Section */
+.timeline-day-summary {
+  margin-top: 3rem;
+  width: 80%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.timeline-summary-card {
+  background-color: var(--cds-layer-02);
+}
+
+.timeline-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: var(--cds-interactive);
+}
+
+.timeline-summary-header h4 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.timeline-summary-text {
+  margin: 0 0 1rem 0;
+  color: var(--cds-text-primary);
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (min-width: 1250px) {
+  .timeline-dot::before {
+    left: calc(-1000px / 10 + 16px);
+  }
+  .timeline-dot::after {
+    right: calc(-1000px / 10 + 16px);
+  }
+}
+
+@media (max-width: 850px) {
+  .timeline-dot {
+    width: 24px;
+    height: 24px;
+  }
+
+  .timeline-dot::before,
+  .timeline-dot::after {
+    height: 3px;
+  }
+
+  .timeline-dot::before {
+    left: calc(-80vw / 10 + 12px);
+  }
+
+  .timeline-dot::after {
+    right: calc(-80vw / 10 + 12px);
+  }
+
+  .timeline-dot span::before {
+    font-size: 0.7rem;
+    width: 100px;
+  }
+
+  .timeline-dot span::after {
+    font-size: 0.7rem;
+  }
+}
+
+/* Mobile Layout */
+@media (max-width: 600px) {
+  .timeline-flex-parent {
+    justify-content: initial;
+  }
+
+  .timeline-input-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    margin-top: 2rem;
+  }
+
+  .timeline-dot {
+    width: 60px;
+    height: 60px;
+    margin: 0 0.5rem 3rem;
+    background-color: var(--cds-border-subtle);
+  }
+
+  .timeline-dot.active {
+    background-color: var(--cds-interactive);
+  }
+
+  .timeline-dot::before,
+  .timeline-dot::after {
+    content: none;
+  }
+
+  .timeline-dot span {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .timeline-dot span::before {
+    bottom: -30px;
+    transform: translateX(-50%);
+    text-indent: 0;
+    text-align: center;
+    width: 120px;
+  }
+
+  .timeline-dot span::after {
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: 700;
+  }
+
+  .timeline-description-container {
+    margin-top: 2rem;
+    width: 100%;
+  }
+
+  .timeline-day-summary {
+    width: 100%;
+  }
+}
