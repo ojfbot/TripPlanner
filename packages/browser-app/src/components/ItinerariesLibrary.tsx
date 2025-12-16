@@ -18,11 +18,23 @@ function ItinerariesLibrary() {
   const [viewMode, setViewMode] = useState<'table' | 'timeline'>('table');
   const [availableItineraries, setAvailableItineraries] = useState<any[]>([]);
 
-  // Fetch documents on mount and transform to itineraries
+  // Fetch documents on mount and when component becomes visible
+  // This ensures fresh data when navigating to Itineraries tab after an import
   useEffect(() => {
     console.log('[ItinerariesLibrary] Fetching documents for default-user');
     dispatch(fetchDocuments({ userId: 'default-user' }));
-  }, [dispatch]);
+
+    // Set up interval to refetch every 5 seconds if data is still loading
+    // This helps pick up newly imported documents
+    const intervalId = setInterval(() => {
+      if (documents.length === 0 && !isLoading) {
+        console.log('[ItinerariesLibrary] Refetching documents (empty state)');
+        dispatch(fetchDocuments({ userId: 'default-user' }));
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Transform documents to itineraries when documents are loaded
   useEffect(() => {
