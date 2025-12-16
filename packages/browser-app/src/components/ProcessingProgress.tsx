@@ -3,7 +3,7 @@
  * Displays real-time progress updates during document processing via SSE
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Loading } from '@carbon/react';
 import { ProcessingPhase, PHASE_MESSAGES } from '../types/processing-phase';
 import './ProcessingProgress.scss';
@@ -14,13 +14,30 @@ interface ProcessingProgressProps {
   onError: (error: string, phase: string) => void;
 }
 
+interface ProgressMessage {
+  id: string;
+  text: string;
+  timestamp: Date;
+  phase: ProcessingPhase | '';
+}
+
 export const ProcessingProgress: React.FC<ProcessingProgressProps> = ({
   processId,
   onComplete,
   onError,
 }) => {
   const [phase, setPhase] = useState<ProcessingPhase | ''>('');
-  const [message, setMessage] = useState<string>('Initializing your import...');
+  const [messages, setMessages] = useState<ProgressMessage[]>([
+    { id: '0', text: 'Initializing your import...', timestamp: new Date(), phase: '' }
+  ]);
+  const logRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (logRef.current) {
+      logRef.current.scrollTop = logRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     // Connect to SSE endpoint
@@ -29,6 +46,8 @@ export const ProcessingProgress: React.FC<ProcessingProgressProps> = ({
       `/api/v1/integrations/process/${processId}/stream`
     );
 
+    let messageCounter = 1;
+
     eventSource.addEventListener('progress', (e: MessageEvent) => {
       try {
         const data = JSON.parse(e.data);
@@ -36,7 +55,15 @@ export const ProcessingProgress: React.FC<ProcessingProgressProps> = ({
         const newMessage = data.message || PHASE_MESSAGES[data.phase as ProcessingPhase] || 'Processing your conversation...';
         console.log(`[ProcessingProgress] Phase: ${data.phase}, Progress: ${data.progress}%, Message: ${newMessage}`);
         setPhase(data.phase);
-        setMessage(newMessage);
+        setMessages(prev => [
+          ...prev,
+          {
+            id: String(messageCounter++),
+            text: newMessage,
+            timestamp: new Date(),
+            phase: data.phase
+          }
+        ]);
       } catch (error) {
         console.error('Error parsing progress event:', error);
       }
@@ -58,7 +85,15 @@ export const ProcessingProgress: React.FC<ProcessingProgressProps> = ({
       try {
         const data = JSON.parse(e.data);
         console.log('[ProcessingProgress] Import complete!', data);
-        setMessage('All done! Your trip has been set up.');
+        setMessages(prev => [
+          ...prev,
+          {
+            id: String(messageCounter++),
+            text: '✓ All done! Your trip has been set up.',
+            timestamp: new Date(),
+            phase: ''
+          }
+        ]);
         onComplete(data.data);
         eventSource.close();
       } catch (error) {
@@ -87,7 +122,27 @@ export const ProcessingProgress: React.FC<ProcessingProgressProps> = ({
       <div className="processing-progress__overlay">
         <div className="processing-progress__content">
           <Loading description="" withOverlay={false} />
-          <p key={message} className="processing-progress__message">{message}</p>
+          <div className="processing-progress__log" ref={logRef}>
+            {messages.map((msg, index) => (
+              <div
+                key={msg.id}
+                className={`processing-progress__message ${index === messages.length - 1 ? 'latest' : ''}`}
+                style={{
+                  animation: 'fadeIn 0.3s ease-in',
+                  opacity: index === messages.length - 1 ? 1 : 0.7
+                }}
+              >
+                <span className="processing-progress__time">
+                  {msg.timestamp.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                  })}
+                </span>
+                <span className="processing-progress__text">{msg.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

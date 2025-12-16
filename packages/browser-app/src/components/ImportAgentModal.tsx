@@ -264,13 +264,13 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
       )}
 
       {!isProcessing && (
-        <div style={{ height: '65vh', maxHeight: '750px', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
-          <Tabs selectedIndex={activeTab} onChange={(e) => setActiveTab(e.selectedIndex)} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-            <TabList aria-label="Import options" contained style={{ flexShrink: 0 }}>
+        <div style={{ height: '65vh', maxHeight: '750px', minHeight: '600px' }}>
+          <Tabs selectedIndex={activeTab} onChange={(e) => setActiveTab(e.selectedIndex)}>
+            <TabList aria-label="Import options" contained style={{ marginBottom: '1rem' }}>
               <Tab>Paste Conversation</Tab>
               <Tab>Upload File</Tab>
             </TabList>
-            <TabPanels style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+            <TabPanels style={{ height: 'calc(100% - 60px)', overflow: 'auto' }}>
               {/* Tab 1: Paste Conversation */}
               <TabPanel style={{ height: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '1rem' }}>
