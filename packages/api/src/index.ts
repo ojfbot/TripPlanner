@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import threadsRouter from './routes/threads.js';
 import chatRouter from './routes/chat.js';
 import integrationsRouter from './routes/integrations.js';
+import toolsRouter from './routes/tools.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3011;
@@ -29,6 +30,9 @@ app.use('/api/', limiter);
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Capability manifest (ADR-0007) — unauthenticated
+app.use('/api/tools', toolsRouter);
 
 // API routes
 app.use('/api/v1/threads', threadsRouter);
