@@ -70,3 +70,7 @@ test-*.js
 
 # Husky
 .husky/_
+
+# Managed by core — do not commit
+domain-knowledge/
+.claude/commands/
