@@ -45,29 +45,38 @@ router.post('/message', async (req: Request, res: Response) => {
     const userId = thread.userId;
     const documents = db.getDocumentsByUserId(userId);
 
-    // Collect all chunks with embeddings
+    // TODO: replace this full-scan with a sqlite-vec ANN query so we only load
+    // the top-K semantically relevant chunks rather than every embedding in the
+    // database. Loading all vectors (1536 floats × N chunks) into memory per
+    // request will not scale beyond a handful of documents.
+    // Tracking issue: add sqlite-vec and push similarity search into the DB layer.
+    const MAX_CHUNKS = 500;
+
+    // Collect all chunks with embeddings (capped to avoid runaway memory usage)
     const chunksWithEmbeddings: Array<{
       chunkId: string;
       documentId: string;
       content: string;
       embedding: number[];
       documentTitle: string;
-      metadata?: any;
+      metadata?: unknown;
     }> = [];
 
     for (const doc of documents) {
+      if (chunksWithEmbeddings.length >= MAX_CHUNKS) break;
       if (doc.embeddingStatus === 'completed') {
         const chunks = db.getChunksByDocumentId(doc.documentId);
         for (const chunk of chunks) {
+          if (chunksWithEmbeddings.length >= MAX_CHUNKS) break;
           const embedding = db.getEmbeddingByChunkId(chunk.chunkId);
           if (embedding) {
             chunksWithEmbeddings.push({
               chunkId: chunk.chunkId,
               documentId: doc.documentId,
               content: chunk.content,
-              embedding: JSON.parse(embedding.vector),
+              embedding: JSON.parse(embedding.vector) as number[],
               documentTitle: doc.title,
-              metadata: JSON.parse(chunk.metadata),
+              metadata: JSON.parse(chunk.metadata) as unknown,
             });
           }
         }

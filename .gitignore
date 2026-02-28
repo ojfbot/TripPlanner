@@ -65,5 +65,8 @@ conversations.json
 *.sqlite
 *.sqlite3
 
+# Ad-hoc dev test scripts (hardcoded local paths, not suitable for CI)
+test-*.js
+
 # Husky
 .husky/_

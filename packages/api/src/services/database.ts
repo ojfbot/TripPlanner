@@ -21,12 +21,12 @@ export interface Message {
 export interface Document {
   documentId: string;
   userId: string;
-  type: 'chatgpt_transcript' | 'text' | 'other';
+  type: 'chatgpt_transcript' | 'text' | 'other' | 'pre_structured_trip';
   title: string;
   rawContent: string;
   metadata: string; // JSON string
   threadId?: string; // Optional link to associated thread
-  embeddingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+  embeddingStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
   extractionStatus: 'pending' | 'processing' | 'completed' | 'failed';
   extractedData?: string; // JSON string of ExtractedTripData
   createdAt: string;
@@ -60,6 +60,44 @@ class DatabaseService {
     this.initializeTables();
   }
 
+  /**
+   * Migrate documents table to support the pre_structured_trip type.
+   * SQLite does not support ALTER TABLE ... ADD CONSTRAINT, so we recreate
+   * the table when an older constraint is detected.
+   */
+  private migrateDocumentsTable(): void {
+    const row = this.db.prepare(
+      "SELECT sql FROM sqlite_master WHERE type='table' AND name='documents'"
+    ).get() as { sql: string } | undefined;
+
+    if (!row || row.sql.includes("'pre_structured_trip'")) return;
+
+    console.log('🔄 Migrating documents table to add pre_structured_trip type...');
+    this.db.exec('PRAGMA foreign_keys=OFF');
+    this.db.exec(`
+      CREATE TABLE documents_new (
+        documentId TEXT PRIMARY KEY,
+        userId TEXT NOT NULL,
+        type TEXT NOT NULL CHECK(type IN ('chatgpt_transcript', 'text', 'other', 'pre_structured_trip')),
+        title TEXT NOT NULL,
+        rawContent TEXT NOT NULL,
+        metadata TEXT NOT NULL DEFAULT '{}',
+        threadId TEXT,
+        embeddingStatus TEXT NOT NULL DEFAULT 'pending' CHECK(embeddingStatus IN ('pending', 'processing', 'completed', 'failed', 'skipped')),
+        extractionStatus TEXT NOT NULL DEFAULT 'pending' CHECK(extractionStatus IN ('pending', 'processing', 'completed', 'failed')),
+        extractedData TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        FOREIGN KEY (threadId) REFERENCES threads(threadId) ON DELETE SET NULL
+      );
+      INSERT INTO documents_new SELECT * FROM documents;
+      DROP TABLE documents;
+      ALTER TABLE documents_new RENAME TO documents;
+    `);
+    this.db.exec('PRAGMA foreign_keys=ON');
+    console.log('✅ documents table migration complete');
+  }
+
   private initializeTables(): void {
     // Create threads table
     this.db.exec(`
@@ -84,17 +122,20 @@ class DatabaseService {
       )
     `);
 
+    // Migrate documents table before CREATE IF NOT EXISTS so existing DBs get updated constraint
+    this.migrateDocumentsTable();
+
     // Create documents table
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS documents (
         documentId TEXT PRIMARY KEY,
         userId TEXT NOT NULL,
-        type TEXT NOT NULL CHECK(type IN ('chatgpt_transcript', 'text', 'other')),
+        type TEXT NOT NULL CHECK(type IN ('chatgpt_transcript', 'text', 'other', 'pre_structured_trip')),
         title TEXT NOT NULL,
         rawContent TEXT NOT NULL,
         metadata TEXT NOT NULL DEFAULT '{}',
         threadId TEXT,
-        embeddingStatus TEXT NOT NULL DEFAULT 'pending' CHECK(embeddingStatus IN ('pending', 'processing', 'completed', 'failed')),
+        embeddingStatus TEXT NOT NULL DEFAULT 'pending' CHECK(embeddingStatus IN ('pending', 'processing', 'completed', 'failed', 'skipped')),
         extractionStatus TEXT NOT NULL DEFAULT 'pending' CHECK(extractionStatus IN ('pending', 'processing', 'completed', 'failed')),
         extractedData TEXT,
         createdAt TEXT NOT NULL,
