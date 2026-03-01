@@ -141,7 +141,7 @@ function DashboardContent({ shellMode }: DashboardProps) {
 // Self-contained export for Module Federation. Carries its own store so Redux
 // slices always resolve correctly regardless of which Provider is above.
 // In standalone mode App.tsx wraps with the same store singleton — harmless double-wrap.
-function Dashboard({ shellMode }: DashboardProps = {}) {
+function Dashboard({ shellMode }: DashboardProps) {
   return (
     <Provider store={store}>
       <DashboardContent shellMode={shellMode} />
