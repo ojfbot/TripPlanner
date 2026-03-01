@@ -13,7 +13,7 @@ import {
   IconButton,
   Loading,
 } from '@carbon/react';
-import { Copy, SendAlt, Checkmark, Close } from '@carbon/icons-react';
+import { Copy, SendAlt, Checkmark, Close, Bot } from '@carbon/icons-react';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setTripData } from '../store/slices/tripSlice';
@@ -35,9 +35,14 @@ interface ImportAgentModalProps {
 function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) {
   const dispatch = useAppDispatch();
   const extractionPromptTemplate = useAppSelector((state) => state.ui.extractionPromptTemplate);
+  const appSwitcherExpanded = useAppSelector((state) => state.ui.appSwitcherExpanded);
 
   const [pastedContent, setPastedContent] = useState('');
   const [showFullPrompt, setShowFullPrompt] = useState(false);
+  const [showAIEditor, setShowAIEditor] = useState(false);
+
+  // Debug log to verify new code is loaded
+  console.log('[ImportAgentModal] Loaded with showAIEditor support');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [processId, setProcessId] = useState<string | null>(null);
@@ -193,6 +198,7 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
     setPastedContent('');
     setSelectedFile(null);
     setShowFullPrompt(false);
+    setShowAIEditor(false);
     setActiveTab(0);
     setImportSuccess(false);
     setImportError(null);
@@ -232,6 +238,7 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
       primaryButtonDisabled={!canSubmit()}
       preventCloseOnClickOutside={true}
       size="lg"
+      className={`import-agent-modal ${appSwitcherExpanded ? 'app-switcher-active' : ''}`}
     >
       {isProcessing && processId && (
         <ProcessingProgress
@@ -270,7 +277,8 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
               <Tab>Paste Conversation</Tab>
               <Tab>Upload File</Tab>
             </TabList>
-            <TabPanels style={{ height: 'calc(100% - 60px)', overflow: 'auto' }}>
+            <div style={{ height: 'calc(100% - 60px)', overflow: 'auto' }}>
+            <TabPanels>
               {/* Tab 1: Paste Conversation */}
               <TabPanel style={{ height: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '1rem' }}>
@@ -390,7 +398,7 @@ Assistant: Great! What dates?...`}
                                 <IconButton
                                   label="Reject change"
                                   onClick={() => handleRejectChange(change.id)}
-                                  kind={change.accepted === false ? 'danger' : 'ghost'}
+                                  kind={change.accepted === false ? 'secondary' : 'ghost'}
                                   size="sm"
                                 >
                                   <Close size={16} />
@@ -477,6 +485,14 @@ Assistant: Great! What dates?...`}
                     >
                       Copy Request Template
                     </button>
+                    <Button
+                      kind="secondary"
+                      size="sm"
+                      renderIcon={Bot}
+                      onClick={() => setShowAIEditor(!showAIEditor)}
+                    >
+                      {showAIEditor ? 'Hide Editor' : 'Edit Template'}
+                    </Button>
                     <button
                       className="cds--btn cds--btn--secondary cds--btn--sm"
                       type="button"
@@ -487,39 +503,41 @@ Assistant: Great! What dates?...`}
                   </div>
                 </div>
 
-                {/* Section 4: Chat input for modifying request template */}
-                <div style={{ flexShrink: 0 }}>
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <p style={{ fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.25rem' }}>
-                      Modify Request Template with AI
-                    </p>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>
-                      Describe changes you want to the extraction prompt (e.g., focus on specific details, add validation rules, check for ambiguities)
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-                    <div style={{ flex: 1 }}>
-                      <TextArea
-                        id="prompt-modifications"
-                        labelText=""
-                        placeholder="e.g., 'Add extra validation for hotel confirmation numbers' or 'Focus on extracting restaurant dietary restrictions'"
-                        value={promptModifications}
-                        onChange={(e) => setPromptModifications(e.target.value)}
-                        rows={2}
-                        disabled={isGeneratingModifications}
-                      />
+                {/* Section 4: Chat input for modifying request template (toggle-able) */}
+                {showAIEditor && (
+                  <div style={{ flexShrink: 0 }}>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      <p style={{ fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.25rem' }}>
+                        Modify Request Template with AI
+                      </p>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>
+                        Describe changes you want to the extraction prompt (e.g., focus on specific details, add validation rules, check for ambiguities)
+                      </p>
                     </div>
-                    <IconButton
-                      label="Generate modifications"
-                      onClick={handleGenerateModifications}
-                      disabled={!promptModifications.trim() || isGeneratingModifications}
-                      kind="primary"
-                      size="lg"
-                    >
-                      {isGeneratingModifications ? <Loading small withOverlay={false} /> : <SendAlt size={20} />}
-                    </IconButton>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
+                      <div style={{ flex: 1 }}>
+                        <TextArea
+                          id="prompt-modifications"
+                          labelText=""
+                          placeholder="e.g., 'Add extra validation for hotel confirmation numbers' or 'Focus on extracting restaurant dietary restrictions'"
+                          value={promptModifications}
+                          onChange={(e) => setPromptModifications(e.target.value)}
+                          rows={2}
+                          disabled={isGeneratingModifications}
+                        />
+                      </div>
+                      <IconButton
+                        label="Generate modifications"
+                        onClick={handleGenerateModifications}
+                        disabled={!promptModifications.trim() || isGeneratingModifications}
+                        kind="primary"
+                        size="lg"
+                      >
+                        {isGeneratingModifications ? <Loading small withOverlay={false} /> : <SendAlt size={20} />}
+                      </IconButton>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </TabPanel>
 
@@ -559,6 +577,7 @@ Assistant: Great! What dates?...`}
               </div>
             </TabPanel>
           </TabPanels>
+            </div>
         </Tabs>
         </div>
       )}

@@ -39,7 +39,7 @@ export interface ProgressEvent {
   progress: number; // 0-100
   message?: string; // Custom message override
   timestamp: string;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 export interface ErrorEvent {
@@ -51,19 +51,34 @@ export interface ErrorEvent {
 
 export interface CompleteEvent {
   processId: string;
-  data: any;
+  data: Record<string, unknown>;
   timestamp: string;
+}
+
+export interface BufferedEvent {
+  type: 'progress' | 'error' | 'complete';
+  data: ProgressEvent | ErrorEvent | CompleteEvent;
 }
 
 export class ProgressEmitter extends EventEmitter {
   private processId: string;
+  private _eventBuffer: BufferedEvent[] = [];
+  private _completed = false;
 
   constructor(processId: string) {
     super();
     this.processId = processId;
   }
 
-  emitPhase(phase: ProcessingPhase, progress: number, data?: any): void {
+  get isCompleted(): boolean {
+    return this._completed;
+  }
+
+  get bufferedEvents(): readonly BufferedEvent[] {
+    return this._eventBuffer;
+  }
+
+  emitPhase(phase: ProcessingPhase, progress: number, data?: Record<string, unknown>): void {
     const event: ProgressEvent = {
       processId: this.processId,
       phase,
@@ -71,18 +86,20 @@ export class ProgressEmitter extends EventEmitter {
       timestamp: new Date().toISOString(),
       data,
     };
+    this._eventBuffer.push({ type: 'progress', data: event });
     this.emit('progress', event);
   }
 
-  emitProgress(phase: ProcessingPhase, progress: number, message: string, data?: any): void {
+  emitProgress(phase: ProcessingPhase, progress: number, message: string, data?: Record<string, unknown>): void {
     const event: ProgressEvent = {
       processId: this.processId,
       phase,
       progress,
-      message, // Custom message instead of default phase message
+      message,
       timestamp: new Date().toISOString(),
       data,
     };
+    this._eventBuffer.push({ type: 'progress', data: event });
     this.emit('progress', event);
   }
 
@@ -93,15 +110,18 @@ export class ProgressEmitter extends EventEmitter {
       error,
       timestamp: new Date().toISOString(),
     };
+    this._eventBuffer.push({ type: 'error', data: event });
     this.emit('error', event);
   }
 
-  emitComplete(data: any): void {
+  emitComplete(data: Record<string, unknown>): void {
     const event: CompleteEvent = {
       processId: this.processId,
       data,
       timestamp: new Date().toISOString(),
     };
+    this._eventBuffer.push({ type: 'complete', data: event });
+    this._completed = true;
     this.emit('complete', event);
   }
 }

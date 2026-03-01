@@ -12,16 +12,6 @@ import {
 import { useAppSelector } from '../../store/hooks';
 import './TimelineView.css';
 
-interface TimelineItem {
-  id: string;
-  time: string;
-  title: string;
-  category: string;
-  description?: string;
-  location?: string;
-  aiInsight?: string;
-}
-
 function TimelineView() {
   const currentItinerary = useAppSelector((state) => state.itinerary.currentItinerary);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -91,8 +81,6 @@ function TimelineView() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsGeneratingInsight(false);
   };
-
-  const activeItem = timelineItems[activeIndex];
 
   return (
     <div className="timeline-view">

@@ -8,6 +8,9 @@ import {
   ProgressEmitter,
   ProcessingPhase,
   processEmitters,
+  type ProgressEvent,
+  type ErrorEvent,
+  type CompleteEvent,
 } from '../services/progress-emitter.js';
 import {
   processIntelligentImport,
@@ -426,16 +429,28 @@ router.get('/process/:processId/stream', (req: Request, res: Response) => {
     return;
   }
 
-  // Set up event listeners
-  const onProgress = (data: any) => {
+  // Replay any events that fired before the client connected (fixes race condition
+  // where processing completes before the SSE stream is established)
+  for (const buffered of emitter.bufferedEvents) {
+    res.write(`event: ${buffered.type}\ndata: ${JSON.stringify(buffered.data)}\n\n`);
+  }
+
+  // If the process already finished, nothing more to stream
+  if (emitter.isCompleted) {
+    res.end();
+    return;
+  }
+
+  // Set up typed event listeners for future events
+  const onProgress = (data: ProgressEvent) => {
     res.write(`event: progress\ndata: ${JSON.stringify(data)}\n\n`);
   };
 
-  const onError = (data: any) => {
+  const onError = (data: ErrorEvent) => {
     res.write(`event: error\ndata: ${JSON.stringify(data)}\n\n`);
   };
 
-  const onComplete = (data: any) => {
+  const onComplete = (data: CompleteEvent) => {
     res.write(`event: complete\ndata: ${JSON.stringify(data)}\n\n`);
     res.end();
   };
@@ -474,15 +489,22 @@ router.post('/chatgpt/import/intelligent', async (req: Request, res: Response) =
   const emitter = new ProgressEmitter(processId);
   processEmitters.set(processId, emitter);
 
+  // Safety TTL: remove the emitter if the client never connects or processing hangs
+  const ttlTimer = setTimeout(() => {
+    processEmitters.delete(processId);
+  }, 10 * 60 * 1000);
+
   // Return immediately with process ID
   res.status(202).json({ processId, status: 'processing' });
 
   // Start background processing
   processIntelligentImport(userId, content, emitter)
     .then(() => {
+      clearTimeout(ttlTimer);
       processEmitters.delete(processId);
     })
     .catch(error => {
+      clearTimeout(ttlTimer);
       console.error('Error in intelligent import:', error);
       emitter.emitError(
         ProcessingPhase.POPULATING,

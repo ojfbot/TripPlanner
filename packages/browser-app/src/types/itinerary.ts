@@ -41,6 +41,7 @@ export interface ItineraryItem {
   // General metadata
   notes?: string;
   url?: string;
+  aiInsight?: string;
 }
 
 export interface TripItinerary {

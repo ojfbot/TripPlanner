@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface UIState {
   extractionPromptTemplate: string;
+  appSwitcherExpanded: boolean;
+  importModalOpen: boolean;
 }
 
 const DEFAULT_EXTRACTION_PROMPT = `Please analyze our entire trip planning conversation and provide a comprehensive, structured export of the complete trip state with all details, reasoning, and alternatives discussed.
@@ -181,6 +183,8 @@ This export will be used to populate an interactive trip planning dashboard with
 
 const initialState: UIState = {
   extractionPromptTemplate: DEFAULT_EXTRACTION_PROMPT,
+  appSwitcherExpanded: false,
+  importModalOpen: false,
 };
 
 const uiSlice = createSlice({
@@ -193,8 +197,14 @@ const uiSlice = createSlice({
     resetExtractionPromptTemplate: (state) => {
       state.extractionPromptTemplate = DEFAULT_EXTRACTION_PROMPT;
     },
+    setAppSwitcherExpanded: (state, action: PayloadAction<boolean>) => {
+      state.appSwitcherExpanded = action.payload;
+    },
+    setImportModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.importModalOpen = action.payload;
+    },
   },
 });
 
-export const { setExtractionPromptTemplate, resetExtractionPromptTemplate } = uiSlice.actions;
+export const { setExtractionPromptTemplate, resetExtractionPromptTemplate, setAppSwitcherExpanded, setImportModalOpen } = uiSlice.actions;
 export default uiSlice.reducer;

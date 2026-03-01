@@ -11,14 +11,18 @@ import {
   TextInput,
 } from '@carbon/react';
 import { Asleep, Light, Settings } from '@carbon/icons-react';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import { store, RootState } from './store';
+import { setAppSwitcherExpanded, setImportModalOpen } from './store/slices/uiSlice';
 import Dashboard from './components/Dashboard';
 import SettingsModal from './components/SettingsModal';
+import ImportAgentModal from './components/ImportAgentModal';
 import './App.scss';
 
 function AppContent() {
+  const dispatch = useDispatch();
   const tripShortTitle = useSelector((state: RootState) => state.trip.shortTitle);
+  const importModalOpen = useSelector((state: RootState) => state.ui.importModalOpen);
   const [theme, setTheme] = useState<'white' | 'g100'>('g100');
   const [sideNavExpanded, setSideNavExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -54,7 +58,18 @@ function AppContent() {
   };
 
   const onClickSideNavExpand = () => {
-    setSideNavExpanded(!sideNavExpanded);
+    const newExpanded = !sideNavExpanded;
+    setSideNavExpanded(newExpanded);
+    dispatch(setAppSwitcherExpanded(newExpanded));
+
+    // Add/remove class on body for modal positioning
+    if (newExpanded) {
+      console.log('[App] Adding app-switcher-expanded class to body');
+      document.body.classList.add('app-switcher-expanded');
+    } else {
+      console.log('[App] Removing app-switcher-expanded class from body');
+      document.body.classList.remove('app-switcher-expanded');
+    }
   };
 
   const handleAppClick = (appName: string) => {
@@ -112,6 +127,7 @@ function AppContent() {
             aria-label="Side navigation"
             expanded={sideNavExpanded}
             onOverlayClick={onClickSideNavExpand}
+            className="app-switcher-nav"
           >
             <SideNavItems>
               <div className="sidebar-search-container">
@@ -161,6 +177,15 @@ function AppContent() {
         <SettingsModal
           open={settingsModalOpen}
           onClose={() => setSettingsModalOpen(false)}
+        />
+
+        {/* Import Agent Modal */}
+        <ImportAgentModal
+          open={importModalOpen}
+          onClose={() => dispatch(setImportModalOpen(false))}
+          onComplete={() => {
+            dispatch(setImportModalOpen(false));
+          }}
         />
       </div>
     </Theme>

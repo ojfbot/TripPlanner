@@ -13,7 +13,7 @@
 
 .cds--header {
   position: relative;
-  z-index: 8000;
+  z-index: 9999;
   flex-shrink: 0;
 }
 
@@ -63,4 +63,28 @@
   padding: 1rem;
   text-align: center;
   color: var(--cds-text-secondary);
+}
+
+// Z-index layering for sidebars and modals
+// Header/App switcher: 9999 (highest - always accessible)
+// Modal overlay and container: 9000 (Carbon default - middle layer)
+// Thread sidebar: 6000 (lowest - behind modal)
+
+// Thread sidebar - must be behind modal (lowest z-index)
+:global(.cds--side-nav) {
+  z-index: 6000 !important;
+}
+
+// App switcher sidebar - must be above modal (same level as header)
+:global(.app-switcher-nav.cds--side-nav) {
+  z-index: 9999 !important;
+}
+
+// When app switcher is expanded, adjust modal position and size
+:global(body.app-switcher-expanded) {
+  :global(.cds--modal-container) {
+    margin-left: 256px !important;
+    max-width: calc(100% - 256px) !important;
+    transition: margin-left 0.11s cubic-bezier(0.2, 0, 1, 0.9), max-width 0.11s cubic-bezier(0.2, 0, 1, 0.9);
+  }
 }
