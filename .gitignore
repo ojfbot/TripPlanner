@@ -32,6 +32,8 @@ env.json
 *.swo
 *~
 .claude/settings.local.json
+.claude/commands/
+.claude/settings.json
 
 # OS
 .DS_Store
@@ -55,6 +57,11 @@ tmp/
 
 # Personal data
 personal/
+
+# Knowledge context (symlinked from core — not committed per-repo)
+domain-knowledge/
+personal-knowledge/
+decisions/
 
 # Husky
 .husky/_
