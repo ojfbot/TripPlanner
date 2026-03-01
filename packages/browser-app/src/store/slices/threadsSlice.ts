@@ -74,10 +74,11 @@ const threadsSlice = createSlice({
       })
       .addCase(fetchThreads.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.threads = action.payload;
+        const threads = Array.isArray(action.payload) ? action.payload : [];
+        state.threads = threads;
         // Set current thread to the first one if none selected
-        if (!state.currentThreadId && action.payload.length > 0) {
-          state.currentThreadId = action.payload[0].threadId;
+        if (!state.currentThreadId && threads.length > 0) {
+          state.currentThreadId = threads[0].threadId;
         }
       })
       .addCase(fetchThreads.rejected, (state, action) => {
