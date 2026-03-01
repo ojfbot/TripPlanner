@@ -9,16 +9,13 @@
  */
 
 import { Tile } from '@carbon/react'
+import './SettingsPanel.css'
 
-interface SettingsPanelProps {
-  onClose?: () => void
-}
-
-export default function SettingsPanel(_props: SettingsPanelProps) {
+export default function SettingsPanel() {
   return (
     <Tile>
       <p>Configure your TripPlanner preferences and account settings.</p>
-      <p style={{ marginTop: '1rem', color: 'var(--cds-text-secondary)' }}>
+      <p className="settings-coming-soon">
         Coming soon: User preferences, notification settings, and integrations.
       </p>
     </Tile>
