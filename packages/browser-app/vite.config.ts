@@ -18,7 +18,7 @@ export default defineConfig({
       filename: 'remoteEntry.js',
       exposes: {
         './Dashboard': './src/components/Dashboard',
-        './Settings':  './src/components/settings/SettingsPanel',
+        './Settings': './src/components/settings/SettingsPanel',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.3.1' },
@@ -56,6 +56,6 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    minify: false,
+    minify: false, // Required for MF — minification mangles shared module exports
   },
 });
