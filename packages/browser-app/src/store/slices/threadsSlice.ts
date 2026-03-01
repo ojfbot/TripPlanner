@@ -74,10 +74,12 @@ const threadsSlice = createSlice({
       })
       .addCase(fetchThreads.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.threads = action.payload;
-        // Set current thread to the first one if none selected
-        if (!state.currentThreadId && action.payload.length > 0) {
-          state.currentThreadId = action.payload[0].threadId;
+        // Guard: when running as a shell MF remote, relative /api calls hit the
+        // shell's Vite catch-all and return HTML (200 OK). Stay safe.
+        const payload = Array.isArray(action.payload) ? action.payload : [];
+        state.threads = payload;
+        if (!state.currentThreadId && payload.length > 0) {
+          state.currentThreadId = payload[0].threadId;
         }
       })
       .addCase(fetchThreads.rejected, (state, action) => {

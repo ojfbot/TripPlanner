@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Provider } from 'react-redux';
+import { store } from '../store';
 import {
   Tabs,
   TabList,
@@ -21,7 +23,7 @@ import ThreadSidebar from './ThreadSidebar';
 import ErrorBoundary from './ErrorBoundary';
 import './Dashboard.css';
 
-function Dashboard() {
+function DashboardContent() {
   const dispatch = useAppDispatch();
   const currentTab = useAppSelector(state => state.navigation.currentTab);
   const currentTabIndex = useAppSelector(state => state.navigation.currentTabIndex);
@@ -121,6 +123,14 @@ function Dashboard() {
         </ErrorBoundary>
       )}
     </>
+  );
+}
+
+function Dashboard() {
+  return (
+    <Provider store={store}>
+      <DashboardContent />
+    </Provider>
   );
 }
 
