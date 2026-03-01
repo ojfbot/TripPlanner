@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Provider } from 'react-redux';
 import {
   Tabs,
   TabList,
@@ -19,9 +20,19 @@ import IntegrationsLibrary from './IntegrationsLibrary';
 import CondensedChat from './CondensedChat';
 import ThreadSidebar from './ThreadSidebar';
 import ErrorBoundary from './ErrorBoundary';
+// MF isolation: Dashboard may be loaded as a Module Federation remote under the shell's
+// Provider (which has no TripPlanner slices). Wrap with the local store so
+// DashboardContent always resolves against the correct Redux context.
+import { store } from '../store';
 import './Dashboard.css';
 
-function Dashboard() {
+interface DashboardProps {
+  /** True when mounted inside the Frame shell host. Suppresses standalone-mode
+   *  margins and activates the flex height chain so content fills the shell frame. */
+  shellMode?: boolean;
+}
+
+function DashboardContent({ shellMode }: DashboardProps) {
   const dispatch = useAppDispatch();
   const currentTab = useAppSelector(state => state.navigation.currentTab);
   const currentTabIndex = useAppSelector(state => state.navigation.currentTabIndex);
@@ -58,7 +69,11 @@ function Dashboard() {
       )}
 
       <div
-        className={`dashboard-wrapper ${showThreadSidebar && sidebarExpanded ? 'with-sidebar' : ''}`}
+        className={[
+          'dashboard-wrapper',
+          showThreadSidebar && sidebarExpanded ? 'with-sidebar' : '',
+          shellMode ? 'shell-mode' : '',
+        ].filter(Boolean).join(' ')}
         data-element="app-container"
       >
         <div className="dashboard-header">
@@ -120,6 +135,17 @@ function Dashboard() {
         </ErrorBoundary>
       )}
     </>
+  );
+}
+
+// Self-contained export for Module Federation. Carries its own store so Redux
+// slices always resolve correctly regardless of which Provider is above.
+// In standalone mode App.tsx wraps with the same store singleton — harmless double-wrap.
+function Dashboard({ shellMode }: DashboardProps = {}) {
+  return (
+    <Provider store={store}>
+      <DashboardContent shellMode={shellMode} />
+    </Provider>
   );
 }
 
