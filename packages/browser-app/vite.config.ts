@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import federation from '@originjs/vite-plugin-federation';
+import cssInjectedByJs from 'vite-plugin-css-injected-by-js';
 import path from 'path';
 
 // TripPlanner is a Module Federation REMOTE.
@@ -13,6 +14,13 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react(),
+    // cssInjectedByJs must come before federation — intercepts CSS extraction and
+    // converts it to JS style-injection so the exposed Dashboard carries its own
+    // styles. jsAssetsFilterFunction scopes injection to the Dashboard chunk only.
+    cssInjectedByJs({
+      jsAssetsFilterFunction: ({ fileName }) =>
+        fileName.includes('__federation_expose_Dashboard'),
+    }),
     federation({
       name: 'tripplanner',
       filename: 'remoteEntry.js',

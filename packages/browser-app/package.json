@@ -32,7 +32,8 @@
     "@vitejs/plugin-react": "catalog:",
     "sass": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vite-plugin-css-injected-by-js": "^4.0.1"
   },
   "publishConfig": {
     "access": "restricted"

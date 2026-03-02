@@ -15,9 +15,10 @@
   transition: all var(--animation-duration-medium) ease-out;
 }
 
-/* Move condensed chat left when sidebar is open */
+/* Move condensed chat left when sidebar is open.
+ * Dashboard margin-right with-sidebar = calc(320px + 2rem); match so right edge aligns. */
 .condensed-chat.with-sidebar {
-  right: calc(var(--sidebar-width) + 1rem);
+  right: calc(var(--sidebar-width) + 2rem);
 }
 
 .condensed-chat.expanded {

@@ -76,10 +76,10 @@ const threadsSlice = createSlice({
         state.isLoading = false;
         // Guard: when running as a shell MF remote, relative /api calls hit the
         // shell's Vite catch-all and return HTML (200 OK). Stay safe.
-        const payload = Array.isArray(action.payload) ? action.payload : [];
-        state.threads = payload;
-        if (!state.currentThreadId && payload.length > 0) {
-          state.currentThreadId = payload[0].threadId;
+        const threads = Array.isArray(action.payload) ? action.payload : [];
+        state.threads = threads;
+        if (!state.currentThreadId && threads.length > 0) {
+          state.currentThreadId = threads[0].threadId;
         }
       })
       .addCase(fetchThreads.rejected, (state, action) => {

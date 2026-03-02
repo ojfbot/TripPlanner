@@ -1,17 +1,17 @@
 .thread-sidebar {
   position: fixed;
-  right: 0;
-  top: 48px;
-  height: calc(100vh - 48px);
+  right: 1rem;
+  top: calc(48px + 0.5rem);
+  height: calc(100vh - 48px - 1rem);
   width: 320px;
   background-color: var(--cds-layer-01);
   border-left: 1px solid var(--cds-border-subtle);
   display: flex;
   flex-direction: column;
-  transform: translateX(100%);
+  transform: translateX(calc(100% + 1rem));
   transition: transform 0.3s ease;
   z-index: 9998;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
 }
 
 .thread-sidebar.expanded {

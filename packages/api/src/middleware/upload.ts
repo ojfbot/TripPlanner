@@ -5,7 +5,8 @@ import { Request } from 'express';
 // Files are stored in memory as Buffer objects
 const storage = multer.memoryStorage();
 
-// File filter to accept only text and JSON files
+// File filter to accept text, markdown, and JSON files.
+// ImportAgentModal accepts .json, .md, and .txt — keep this in sync with the UI.
 const fileFilter = (
   _req: Request,
   file: Express.Multer.File,
@@ -15,9 +16,10 @@ const fileFilter = (
     'text/plain',
     'application/json',
     'text/json',
+    'text/markdown',
   ];
 
-  const allowedExtensions = ['.txt', '.json'];
+  const allowedExtensions = ['.txt', '.json', '.md'];
 
   const isAllowedMimeType = allowedMimeTypes.includes(file.mimetype);
   const hasAllowedExtension = allowedExtensions.some(ext =>
@@ -27,7 +29,7 @@ const fileFilter = (
   if (isAllowedMimeType || hasAllowedExtension) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only .txt and .json files are allowed.'));
+    cb(new Error('Invalid file type. Only .txt, .json, and .md files are allowed.'));
   }
 };
 

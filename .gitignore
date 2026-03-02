@@ -32,6 +32,8 @@ env.json
 *.swo
 *~
 .claude/settings.local.json
+.claude/commands/
+.claude/settings.json
 
 # OS
 .DS_Store

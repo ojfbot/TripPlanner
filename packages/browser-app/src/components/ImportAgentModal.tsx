@@ -41,8 +41,6 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
   const [showFullPrompt, setShowFullPrompt] = useState(false);
   const [showAIEditor, setShowAIEditor] = useState(false);
 
-  // Debug log to verify new code is loaded
-  console.log('[ImportAgentModal] Loaded with showAIEditor support');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [processId, setProcessId] = useState<string | null>(null);
