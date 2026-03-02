@@ -1,7 +1,9 @@
 .condensed-chat {
   position: fixed;
   bottom: 1rem;
-  right: var(--dashboard-right-margin);
+  /* Overhang 1rem past dashboard right edge — same gap used between
+   * dashboard and ThreadSidebar when the sidebar is expanded. */
+  right: calc(var(--dashboard-right-margin) - 1rem);
   width: var(--condensed-chat-width);
   max-width: calc(100vw - 2rem);
   background-color: var(--cds-layer-01);
@@ -15,10 +17,11 @@
   transition: all var(--animation-duration-medium) ease-out;
 }
 
-/* Move condensed chat left when sidebar is open.
- * Dashboard margin-right with-sidebar = calc(320px + 2rem); match so right edge aligns. */
+/* When sidebar is open: push chat 1rem further left than the dashboard right edge.
+ * Dashboard margin-right = calc(--sidebar-width + 2rem); adding 1rem separates them
+ * by the same gap the dashboard uses to breathe from the sidebar. */
 .condensed-chat.with-sidebar {
-  right: calc(var(--sidebar-width) + 2rem);
+  right: calc(var(--sidebar-width) + 3rem);
 }
 
 .condensed-chat.expanded {

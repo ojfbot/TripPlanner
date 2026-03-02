@@ -9,13 +9,19 @@
   display: flex;
   flex-direction: column;
   transform: translateX(calc(100% + 1rem));
-  transition: transform 0.3s ease;
+  /* visibility:hidden removes the collapsed sidebar from the tab order.
+   * Delay 0s when expanding (visible immediately), 0.3s when collapsing
+   * (let the slide-out transform finish before removing from a11y tree). */
+  visibility: hidden;
+  transition: transform 0.3s ease, visibility 0s 0.3s;
   z-index: 9998;
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
 }
 
 .thread-sidebar.expanded {
   transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.3s ease, visibility 0s;
 }
 
 .thread-sidebar-header {
