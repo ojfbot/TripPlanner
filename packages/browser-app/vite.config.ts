@@ -43,6 +43,7 @@ export default defineConfig({
   },
   server: {
     port: 3010,
+    cors: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3011',
@@ -52,8 +53,7 @@ export default defineConfig({
   },
   preview: {
     port: 3010,
-    strictPort: true,
-    host: true,
+    cors: true,
   },
   css: {
     preprocessorOptions: {

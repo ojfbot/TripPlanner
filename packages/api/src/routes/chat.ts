@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { randomUUID } from 'crypto';
 import { db } from '../services/database.js';
+import { ragChatAgent } from '@tripplanner/agent-graph';
+import type { ChatMessage } from '@tripplanner/agent-graph';
 
 const router: Router = Router();
 
@@ -31,19 +33,107 @@ router.post('/message', async (req: Request, res: Response) => {
       timestamp,
     });
 
-    // TODO: Call agent-graph for AI response
-    // For now, return a placeholder response
+    // Get conversation history (last 10 messages for context)
+    const allMessages = db.getMessagesByThreadId(threadId);
+    const recentHistory = allMessages.slice(-11, -1); // Exclude the just-added user message
+    const conversationHistory: ChatMessage[] = recentHistory.map(msg => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+
+    // Get user's documents with embeddings for RAG context
+    const userId = thread.userId;
+    const documents = db.getDocumentsByUserId(userId);
+
+    // TODO: replace this full-scan with a sqlite-vec ANN query so we only load
+    // the top-K semantically relevant chunks rather than every embedding in the
+    // database. Loading all vectors (1536 floats × N chunks) into memory per
+    // request will not scale beyond a handful of documents.
+    // Tracking issue: add sqlite-vec and push similarity search into the DB layer.
+    const MAX_CHUNKS = 500;
+
+    // Collect all chunks with embeddings (capped to avoid runaway memory usage)
+    const chunksWithEmbeddings: Array<{
+      chunkId: string;
+      documentId: string;
+      content: string;
+      embedding: number[];
+      documentTitle: string;
+      metadata?: unknown;
+    }> = [];
+
+    for (const doc of documents) {
+      if (chunksWithEmbeddings.length >= MAX_CHUNKS) break;
+      if (doc.embeddingStatus === 'completed') {
+        const chunks = db.getChunksByDocumentId(doc.documentId);
+        for (const chunk of chunks) {
+          if (chunksWithEmbeddings.length >= MAX_CHUNKS) break;
+          const embedding = db.getEmbeddingByChunkId(chunk.chunkId);
+          if (embedding) {
+            chunksWithEmbeddings.push({
+              chunkId: chunk.chunkId,
+              documentId: doc.documentId,
+              content: chunk.content,
+              embedding: JSON.parse(embedding.vector) as number[],
+              documentTitle: doc.title,
+              metadata: JSON.parse(chunk.metadata) as unknown,
+            });
+          }
+        }
+      }
+    }
+
+    // Generate AI response with RAG
+    let assistantContent: string;
+    let ragMetadata: any = {};
+
+    if (ragChatAgent.isConfigured() && chunksWithEmbeddings.length > 0) {
+      // Use RAG-enhanced response
+      const ragResponse = await ragChatAgent.chatWithAutoContext(
+        message,
+        chunksWithEmbeddings,
+        conversationHistory
+      );
+
+      if (ragResponse.success && ragResponse.message) {
+        assistantContent = ragResponse.message;
+        ragMetadata = {
+          useRAG: true,
+          contextCount: ragResponse.contextsUsed?.length || 0,
+          model: ragResponse.metadata?.model,
+          contextSources: ragResponse.contextsUsed?.map(ctx => ({
+            documentTitle: ctx.documentTitle,
+            similarity: ctx.similarity,
+          })),
+        };
+      } else {
+        // Fallback if RAG fails
+        assistantContent = ragResponse.error || 'I encountered an error processing your request.';
+        ragMetadata = { useRAG: false, error: ragResponse.error };
+      }
+    } else if (!ragChatAgent.isConfigured()) {
+      // API key not configured
+      assistantContent = 'AI chat is not configured. Please set Anthropic and OpenAI API keys in your env.json configuration.';
+      ragMetadata = { useRAG: false, reason: 'not_configured' };
+    } else {
+      // No documents available
+      assistantContent = 'I can help you plan trips! However, I don\'t have any context from uploaded documents yet. You can upload ChatGPT transcripts or other travel planning documents to give me more context about your preferences.';
+      ragMetadata = { useRAG: false, reason: 'no_documents' };
+    }
+
+    // Save assistant message
     const assistantMessage = db.addMessage({
       messageId: randomUUID(),
       threadId,
       role: 'assistant',
-      content: 'This is a placeholder response. Agent integration coming soon!\n\nI\'ll help you plan amazing trips once the AI backend is fully connected.',
+      content: assistantContent,
       timestamp: new Date().toISOString(),
     });
 
     res.json({
       userMessage,
       assistantMessage,
+      metadata: ragMetadata,
     });
   } catch (error) {
     console.error('Error processing message:', error);

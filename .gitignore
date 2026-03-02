@@ -58,10 +58,24 @@ tmp/
 # Personal data
 personal/
 
-# Knowledge context (symlinked from core — not committed per-repo)
-domain-knowledge/
-personal-knowledge/
-decisions/
+# ChatGPT conversation exports (prototype trip planning data)
+conversations.json
+**/conversations.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ad-hoc dev test scripts (hardcoded local paths, not suitable for CI)
+test-*.js
 
 # Husky
 .husky/_
+
+# Managed by core — do not commit
+domain-knowledge/
+.claude/commands/
+decisions/
+personal-knowledge/
+.claude/settings.json

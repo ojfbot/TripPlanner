@@ -26,6 +26,15 @@
   max-height: calc(100vh - 2rem);
 }
 
+.condensed-chat.minimized {
+  height: auto;
+}
+
+.condensed-chat.minimized .condensed-header {
+  border-radius: 8px;
+  border-bottom: none;
+}
+
 .condensed-header {
   display: flex;
   justify-content: space-between;

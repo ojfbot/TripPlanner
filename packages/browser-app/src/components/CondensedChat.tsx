@@ -13,11 +13,12 @@ import {
   addMessage,
   setDraftInput,
   setIsLoading,
-  setIsExpanded,
+  setViewState,
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
+import { TabKey } from '../models/navigation';
 import { CONDENSED_QUICK_ACTIONS } from '../config/quickActions';
-import { FOCUS_DELAY_MS, UNREAD_BADGE_TEXT } from '../config/ui';
+import { UNREAD_BADGE_TEXT } from '../config/ui';
 import MarkdownMessage from './MarkdownMessage';
 import '../styles/variables.css';
 import '../styles/animations.css';
@@ -29,11 +30,20 @@ interface CondensedChatProps {
 
 function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   const dispatch = useAppDispatch();
-  const { messages, draftInput, isLoading, isExpanded, unreadCount } = useAppSelector(
+  const { messages, draftInput, isLoading, viewState, unreadCount } = useAppSelector(
     state => state.chat
   );
+  const currentTab = useAppSelector(state => state.navigation.currentTab);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const expandingRef = useRef(false);
+
+  const isExpanded = viewState === 'expanded';
+
+  // Debug: Monitor viewState changes
+  useEffect(() => {
+    console.log('[CondensedChat] viewState changed to:', viewState, 'isExpanded:', isExpanded);
+  }, [viewState, isExpanded]);
 
   /**
    * Auto-scroll to bottom with double requestAnimationFrame
@@ -66,14 +76,11 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   // Auto-focus input when expanding
   useEffect(() => {
     if (isExpanded) {
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         textAreaRef.current?.focus();
-      }, FOCUS_DELAY_MS);
-      scrollToBottom(true);
-      return () => clearTimeout(timeoutId);
+      }, 100);
     }
-    return undefined;
-  }, [isExpanded, scrollToBottom]);
+  }, [isExpanded]);
 
   // Auto-scroll when messages change
   useEffect(() => {
@@ -81,6 +88,20 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
       scrollToBottom();
     }
   }, [messages, isExpanded, scrollToBottom]);
+
+  // Auto-collapse chat when switching away from Interactive tab
+  // Only trigger on tab change, not on every viewState change
+  const prevTabRef = useRef(currentTab);
+  useEffect(() => {
+    const prevTab = prevTabRef.current;
+    prevTabRef.current = currentTab;
+
+    // Only auto-collapse when switching FROM Interactive TO another tab
+    if (prevTab === TabKey.INTERACTIVE && currentTab !== TabKey.INTERACTIVE && viewState === 'expanded') {
+      console.log('[CondensedChat] Auto-collapsing due to tab switch from Interactive');
+      dispatch(setViewState('collapsed'));
+    }
+  }, [currentTab, viewState, dispatch]);
 
   const handleSend = useCallback(async (messageText?: string) => {
     const textToSend = messageText || draftInput.trim();
@@ -111,12 +132,15 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
     handleSend(prompt);
   }, [handleSend]);
 
-  const handleToggleExpand = () => {
-    if (!isExpanded) {
+  const handleToggleExpand = useCallback(() => {
+    // Toggle between collapsed and expanded
+    if (isExpanded) {
+      dispatch(setViewState('collapsed'));
+    } else {
+      dispatch(setViewState('expanded'));
       dispatch(markMessagesAsRead());
     }
-    dispatch(setIsExpanded(!isExpanded));
-  };
+  }, [isExpanded, dispatch]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -126,22 +150,36 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   }, [handleSend]);
 
   const handleInputFocus = useCallback(() => {
-    if (!isExpanded) {
-      dispatch(setIsExpanded(true));
-      dispatch(markMessagesAsRead());
+    // When not expanded, focusing the input expands the chat
+    // Use ref to prevent re-triggering during auto-focus after expand
+    console.log('[CondensedChat] handleInputFocus called, isExpanded:', isExpanded, 'viewState:', viewState, 'expandingRef:', expandingRef.current);
+    if (!isExpanded && !expandingRef.current) {
+      console.log('[CondensedChat] Dispatching setViewState(expanded)');
+      expandingRef.current = true;
+      dispatch(setViewState('expanded'));
+      // Reset after animation completes
+      setTimeout(() => {
+        console.log('[CondensedChat] Resetting expandingRef');
+        expandingRef.current = false;
+      }, 200);
     }
-  }, [isExpanded, dispatch]);
+  }, [isExpanded, viewState, dispatch]);
 
   return (
-    <div className={`condensed-chat ${isExpanded ? 'expanded' : ''} ${sidebarExpanded ? 'with-sidebar' : ''}`}>
+    <div className={`condensed-chat ${viewState} ${sidebarExpanded ? 'with-sidebar' : ''}`}>
       <div
         className="condensed-header"
-        onClick={() => {
-          if (!isExpanded) {
+        onClick={handleToggleExpand}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
             handleToggleExpand();
           }
         }}
-        style={{ cursor: isExpanded ? 'default' : 'pointer' }}
+        role="button"
+        tabIndex={0}
+        aria-label={isExpanded ? 'Collapse chat' : 'Expand chat'}
+        style={{ cursor: 'pointer' }}
       >
         <div className="header-left">
           <ChatBot size={20} />
@@ -223,8 +261,17 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
       )}
 
       <div className="condensed-input-wrapper">
-        <div className="textarea-container-condensed">
-          {isExpanded ? (
+          <div
+            className="textarea-container-condensed"
+            onClick={() => {
+              if (!isExpanded) {
+                console.log('[CondensedChat] Container clicked - expanding');
+                handleInputFocus();
+              }
+            }}
+            style={{ cursor: isExpanded ? 'text' : 'pointer' }}
+          >
+            {isExpanded ? (
             <TextArea
               ref={textAreaRef}
               labelText="Message"
@@ -246,6 +293,7 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
               onChange={(e) => dispatch(setDraftInput(e.target.value))}
               onKeyDown={handleKeyDown}
               onFocus={handleInputFocus}
+              onClick={handleInputFocus}
               disabled={isLoading}
               size="md"
             />

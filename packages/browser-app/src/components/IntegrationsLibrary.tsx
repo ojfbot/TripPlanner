@@ -20,7 +20,7 @@ function IntegrationsLibrary() {
           No integrations configured
         </h3>
         <p style={{ color: 'var(--cds-text-secondary)', marginBottom: '2rem', maxWidth: '400px' }}>
-          Upload travel documents or connect external services to get started
+          Upload trip documents or connect external services to get started
         </p>
         <Button renderIcon={Upload} kind="primary">
           Upload File

@@ -13,17 +13,20 @@ if [ -z "$STAGED_FILES" ]; then
   exit 0
 fi
 
-# Patterns to detect API keys and secrets
+# Patterns to detect ACTUAL API key values (not variable names).
+# Note: the STAGED_FILES filter above only picks up .ts/.tsx/.js/.jsx/.json files,
+# so .env.example files are already excluded — no false positives from example files.
 PATTERNS=(
-  'sk-ant-'           # Anthropic API keys
-  'sk-'               # OpenAI-style keys
-  'secret_'           # Secret tokens
-  'ghp_'              # GitHub personal access tokens
-  'ANTHROPIC_API_KEY' # Environment variable references (in non-.env files)
-  'OPENAI_API_KEY'
+  'sk-ant-api[0-9]{2}-[A-Za-z0-9_-]{95}'  # Anthropic API key format
+  'sk-[A-Za-z0-9]{48}'                    # OpenAI-style keys (48 chars)
+  'ghp_[A-Za-z0-9]{36}'                   # GitHub personal access tokens
+  'sk_live_[A-Za-z0-9]{20,}'             # Stripe live secret keys
+  'sk_test_[A-Za-z0-9]{20,}'             # Stripe test secret keys
+  'secret_[A-Za-z0-9_-]{20,}'            # Generic secret-prefixed tokens (Slack, etc.)
+  'xox[baprs]-[A-Za-z0-9-]{10,}'         # Slack OAuth tokens
 )
 
-# Check for patterns in staged files
+# Check for actual API key values in staged files
 FOUND_SECRETS=false
 for file in $STAGED_FILES; do
   for pattern in "${PATTERNS[@]}"; do
@@ -34,8 +37,8 @@ for file in $STAGED_FILES; do
   done
 done
 
-# Check if env.json or .env files are staged
-FORBIDDEN_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '(env\.json|\.env$|\.env\.local)')
+# Check if env.json or .env files are staged (but allow .example files)
+FORBIDDEN_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '(env\.json|\.env$|\.env\.local)' | grep -v '\.example$')
 if [ -n "$FORBIDDEN_FILES" ]; then
   echo "❌ Attempting to commit forbidden files:"
   echo "$FORBIDDEN_FILES"
