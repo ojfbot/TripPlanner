@@ -14,7 +14,7 @@
   animation: slideUp var(--animation-duration-medium) ease-out;
   display: flex;
   flex-direction: column;
-  transition: all var(--animation-duration-medium) ease-out;
+  transition: right 0.2s cubic-bezier(0.4, 0, 0.2, 1), all 0.3s ease-out;
 }
 
 /* When sidebar is open: push chat 1rem further left than the dashboard right edge.
