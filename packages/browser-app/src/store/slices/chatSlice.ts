@@ -8,11 +8,13 @@ export interface Message {
   read?: boolean;
 }
 
+export type ChatViewState = 'minimized' | 'collapsed' | 'expanded';
+
 export interface ChatState {
   messages: Message[];
   draftInput: string;
   isLoading: boolean;
-  isExpanded: boolean;
+  viewState: ChatViewState;
   unreadCount: number;
 }
 
@@ -20,7 +22,7 @@ const initialState: ChatState = {
   messages: [],
   draftInput: '',
   isLoading: false,
-  isExpanded: false,
+  viewState: 'collapsed',
   unreadCount: 0,
 };
 
@@ -48,7 +50,10 @@ const chatSlice = createSlice({
       state.isLoading = action.payload;
     },
     setIsExpanded: (state, action: PayloadAction<boolean>) => {
-      state.isExpanded = action.payload;
+      state.viewState = action.payload ? 'expanded' : 'collapsed';
+    },
+    setViewState: (state, action: PayloadAction<ChatViewState>) => {
+      state.viewState = action.payload;
     },
     markMessagesAsRead: (state) => {
       state.messages.forEach((msg) => {
@@ -68,6 +73,7 @@ export const {
   setDraftInput,
   setIsLoading,
   setIsExpanded,
+  setViewState,
   markMessagesAsRead,
   clearMessages,
 } = chatSlice.actions;

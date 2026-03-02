@@ -28,7 +28,7 @@ export const TABS: Record<TabKey, TabDefinition> = {
   },
   [TabKey.TRIPS]: {
     key: TabKey.TRIPS,
-    label: 'My Trips',
+    label: 'Trip Vision',
     icon: <Book size={16} />,
   },
   [TabKey.ITINERARIES]: {

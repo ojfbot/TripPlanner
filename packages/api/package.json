@@ -21,7 +21,8 @@
     "pino": "catalog:",
     "pino-pretty": "catalog:",
     "dotenv": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "multer": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
@@ -29,6 +30,7 @@
     "@types/express": "catalog:",
     "@types/cors": "catalog:",
     "@types/better-sqlite3": "catalog:",
+    "@types/multer": "catalog:",
     "tsx": "catalog:"
   },
   "publishConfig": {

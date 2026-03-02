@@ -77,6 +77,8 @@ const threadsSlice = createSlice({
         if (!Array.isArray(action.payload)) {
           // API returned a non-array (e.g. error object with 200 status) — surface it
           // rather than silently showing an empty list with no error message.
+          // Guard also covers MF remote: relative /api calls hit the shell's Vite
+          // catch-all and return HTML (200 OK) before the API is reachable.
           state.error = 'Unexpected response from server';
           return;
         }

@@ -16,8 +16,10 @@
     "@langchain/anthropic": "catalog:",
     "@langchain/core": "catalog:",
     "@langchain/langgraph": "catalog:",
+    "@langchain/openai": "catalog:",
     "zod": "catalog:",
-    "pino": "catalog:"
+    "pino": "catalog:",
+    "openai": "^4.77.3"
   },
   "devDependencies": {
     "typescript": "catalog:",
