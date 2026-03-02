@@ -15,11 +15,18 @@ export default defineConfig({
   plugins: [
     react(),
     // cssInjectedByJs must come before federation — intercepts CSS extraction and
-    // converts it to JS style-injection so the exposed Dashboard carries its own
-    // styles. jsAssetsFilterFunction scopes injection to the Dashboard chunk only.
+    // converts it to JS style-injection so exposed modules carry their own styles.
+    // jsAssetsFilterFunction scopes injection to our exposed bundles only — without
+    // it the plugin picks a shared chunk (react-dom) the shell never loads (singleton
+    // provided by host), so CSS would never execute.
+    //
+    // The `__federation_expose_` prefix is @originjs/vite-plugin-federation's internal
+    // chunk naming convention (verified at v1.4.x). If CSS stops loading after a plugin
+    // upgrade, check dist/ chunk names and update these strings accordingly.
     cssInjectedByJs({
       jsAssetsFilterFunction: ({ fileName }) =>
-        fileName.includes('__federation_expose_Dashboard'),
+        fileName.includes('__federation_expose_Dashboard') ||
+        fileName.includes('__federation_expose_Settings'),
     }),
     federation({
       name: 'tripplanner',

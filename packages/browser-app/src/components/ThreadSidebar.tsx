@@ -91,7 +91,10 @@ function ThreadSidebar({ isExpanded, onToggle }: ThreadSidebarProps) {
   return (
     <>
       {/* Sidebar */}
-      <div className={`thread-sidebar ${isExpanded ? 'expanded' : 'collapsed'}`}>
+      <div
+        className={`thread-sidebar ${isExpanded ? 'expanded' : 'collapsed'}`}
+        {...(!isExpanded ? { inert: '' } : {})}
+      >
         <div className="thread-sidebar-header">
           <h3 className="thread-sidebar-title">Conversations</h3>
           <div className="thread-sidebar-actions">

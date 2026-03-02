@@ -74,12 +74,17 @@ const threadsSlice = createSlice({
       })
       .addCase(fetchThreads.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Guard: when running as a shell MF remote, relative /api calls hit the
-        // shell's Vite catch-all and return HTML (200 OK). Stay safe.
-        const threads = Array.isArray(action.payload) ? action.payload : [];
-        state.threads = threads;
-        if (!state.currentThreadId && threads.length > 0) {
-          state.currentThreadId = threads[0].threadId;
+        if (!Array.isArray(action.payload)) {
+          // API returned a non-array (e.g. error object with 200 status) — surface it
+          // rather than silently showing an empty list with no error message.
+          // Guard also covers MF remote: relative /api calls hit the shell's Vite
+          // catch-all and return HTML (200 OK) before the API is reachable.
+          state.error = 'Unexpected response from server';
+          return;
+        }
+        state.threads = action.payload;
+        if (!state.currentThreadId && action.payload.length > 0) {
+          state.currentThreadId = action.payload[0].threadId;
         }
       })
       .addCase(fetchThreads.rejected, (state, action) => {
