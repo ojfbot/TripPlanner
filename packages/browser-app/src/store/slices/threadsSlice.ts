@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { apiClient } from '../../api/client';
 
 export interface Thread {
   threadId: string;
@@ -29,7 +29,7 @@ const initialState: ThreadsState = {
 export const fetchThreads = createAsyncThunk(
   'threads/fetchThreads',
   async ({ userId }: { userId: string }) => {
-    const response = await axios.get(`/api/v1/threads?userId=${userId}`);
+    const response = await apiClient.get(`/api/v1/threads?userId=${userId}`);
     return response.data;
   }
 );
@@ -37,7 +37,7 @@ export const fetchThreads = createAsyncThunk(
 export const createThread = createAsyncThunk(
   'threads/createThread',
   async ({ userId, title }: { userId: string; title: string }) => {
-    const response = await axios.post('/api/v1/threads', { userId, title });
+    const response = await apiClient.post('/api/v1/threads', { userId, title });
     return response.data;
   }
 );
@@ -45,7 +45,7 @@ export const createThread = createAsyncThunk(
 export const deleteThread = createAsyncThunk(
   'threads/deleteThread',
   async (threadId: string) => {
-    await axios.delete(`/api/v1/threads/${threadId}`);
+    await apiClient.delete(`/api/v1/threads/${threadId}`);
     return threadId;
   }
 );
@@ -53,7 +53,7 @@ export const deleteThread = createAsyncThunk(
 export const fetchThread = createAsyncThunk(
   'threads/fetchThread',
   async (threadId: string) => {
-    const response = await axios.get(`/api/v1/threads/${threadId}`);
+    const response = await apiClient.get(`/api/v1/threads/${threadId}`);
     return response.data;
   }
 );

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { apiClient } from '../../api/client';
 
 export interface ExtractedTripData {
   destinations: string[];
@@ -54,7 +54,7 @@ export const extractTripFromConversation = createAsyncThunk(
     // First, import the conversation if documentId not provided
     let docId = documentId;
     if (!docId) {
-      const importResponse = await axios.post('/api/v1/integrations/chatgpt/import', {
+      const importResponse = await apiClient.post('/api/v1/integrations/chatgpt/import', {
         userId,
         content,
       });
@@ -63,7 +63,7 @@ export const extractTripFromConversation = createAsyncThunk(
 
     // Extract trip data (TODO: implement extraction endpoint)
     // For now, we'll parse basic info from the conversation
-    const response = await axios.post('/api/v1/integrations/chatgpt/extract-trip', {
+    const response = await apiClient.post('/api/v1/integrations/chatgpt/extract-trip', {
       content,
     });
 
@@ -82,7 +82,7 @@ export const extractTripFromFile = createAsyncThunk(
     formData.append('userId', userId);
     formData.append('transcript', file);
 
-    const importResponse = await axios.post('/api/v1/integrations/chatgpt/import/file', formData, {
+    const importResponse = await apiClient.post('/api/v1/integrations/chatgpt/import/file', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -94,7 +94,7 @@ export const extractTripFromFile = createAsyncThunk(
     const content = await file.text();
 
     // Extract trip data
-    const response = await axios.post('/api/v1/integrations/chatgpt/extract-trip', {
+    const response = await apiClient.post('/api/v1/integrations/chatgpt/extract-trip', {
       content,
     });
 
