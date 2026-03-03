@@ -14,7 +14,7 @@ import {
   Loading,
 } from '@carbon/react';
 import { Copy, SendAlt, Checkmark, Close, Bot } from '@carbon/icons-react';
-import axios from 'axios';
+import { apiClient } from '../api/client';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setTripData } from '../store/slices/tripSlice';
 import { addMessage } from '../store/slices/chatSlice';
@@ -76,7 +76,7 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
       }
 
       // Call the intelligent import endpoint
-      const response = await axios.post('/api/v1/integrations/chatgpt/import/intelligent', {
+      const response = await apiClient.post('/api/v1/integrations/chatgpt/import/intelligent', {
         userId: USER_ID,
         content,
       });
@@ -127,7 +127,7 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
       setShowFullPrompt(true); // Switch to template view
 
       // Call API to generate modifications
-      const response = await axios.post('/api/v1/integrations/chatgpt/modify-prompt', {
+      const response = await apiClient.post('/api/v1/integrations/chatgpt/modify-prompt', {
         currentPrompt: extractionPromptTemplate,
         userRequest: promptModifications,
       });

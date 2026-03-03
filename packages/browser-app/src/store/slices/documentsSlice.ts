@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { apiClient } from '../../api/client';
 
 export interface Document {
   documentId: string;
@@ -59,7 +59,7 @@ const initialState: DocumentsState = {
 export const fetchDocuments = createAsyncThunk(
   'documents/fetchDocuments',
   async ({ userId }: { userId: string }) => {
-    const response = await axios.get(`/api/v1/integrations/documents?userId=${userId}`);
+    const response = await apiClient.get(`/api/v1/integrations/documents?userId=${userId}`);
     return response.data;
   }
 );
@@ -67,7 +67,7 @@ export const fetchDocuments = createAsyncThunk(
 export const importChatGPTTranscript = createAsyncThunk(
   'documents/importChatGPTTranscript',
   async ({ userId, content, threadId }: { userId: string; content: string; threadId?: string }) => {
-    const response = await axios.post('/api/v1/integrations/chatgpt/import', {
+    const response = await apiClient.post('/api/v1/integrations/chatgpt/import', {
       userId,
       content,
       threadId,
@@ -86,7 +86,7 @@ export const importChatGPTFile = createAsyncThunk(
       formData.append('threadId', threadId);
     }
 
-    const response = await axios.post('/api/v1/integrations/chatgpt/import/file', formData, {
+    const response = await apiClient.post('/api/v1/integrations/chatgpt/import/file', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -98,7 +98,7 @@ export const importChatGPTFile = createAsyncThunk(
 export const deleteDocument = createAsyncThunk(
   'documents/deleteDocument',
   async (documentId: string) => {
-    await axios.delete(`/api/v1/integrations/documents/${documentId}`);
+    await apiClient.delete(`/api/v1/integrations/documents/${documentId}`);
     return documentId;
   }
 );
@@ -106,7 +106,7 @@ export const deleteDocument = createAsyncThunk(
 export const checkOpenAIStatus = createAsyncThunk(
   'documents/checkOpenAIStatus',
   async () => {
-    const response = await axios.get('/api/v1/integrations/openai/status');
+    const response = await apiClient.get('/api/v1/integrations/openai/status');
     return response.data;
   }
 );
