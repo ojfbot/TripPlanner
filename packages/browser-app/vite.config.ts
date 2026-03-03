@@ -9,7 +9,7 @@ import path from 'path';
 //   remotes: { tripplanner: 'http://localhost:3010/assets/remoteEntry.js' }
 //
 // Shell shared singletons (must match exactly — version mismatches silently break):
-//   react, react-dom, @reduxjs/toolkit, react-redux
+//   react, react-dom, @reduxjs/toolkit, react-redux, @carbon/react
 
 export default defineConfig({
   plugins: [
@@ -35,12 +35,16 @@ export default defineConfig({
         './Dashboard': './src/components/Dashboard',
         './Settings': './src/components/settings/SettingsPanel',
       },
+      // `singleton`/`requiredVersion` are valid MF config but typed as commented-out
+      // in @originjs/vite-plugin-federation types (plugin type gap, not our bug).
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       shared: {
-        react: { singleton: true, requiredVersion: '^18.3.1' },
-        'react-dom': { singleton: true, requiredVersion: '^18.3.1' },
+        react:              { singleton: true, requiredVersion: '^18.3.1' },
+        'react-dom':        { singleton: true, requiredVersion: '^18.3.1' },
         '@reduxjs/toolkit': { singleton: true, requiredVersion: '^2.5.0' },
-        'react-redux': { singleton: true, requiredVersion: '^9.2.0' },
-      },
+        'react-redux':      { singleton: true, requiredVersion: '^9.2.0' },
+        '@carbon/react':    { singleton: true, requiredVersion: '^1.67.0' },
+      } as any,
     }),
   ],
   resolve: {
