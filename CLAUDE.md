@@ -284,3 +284,36 @@ All three projects share similar patterns:
 - Carbon Design System UI
 - Multi-conversation threading
 - App switcher in header
+
+---
+
+## Frame OS Integration
+
+TripPlanner is a **Module Federation remote** in the Frame OS cluster (see `domain-knowledge/frame-os-context.md`).
+
+### MF remote surface area
+`packages/browser-app/vite.config.ts` exposes two components:
+- `./Dashboard` — loaded by the shell as the main content view
+- `./Settings` — bare settings panel loaded inside the shell's `SettingsModal`
+
+### Shared singletons (must match shell exactly)
+```typescript
+shared: {
+  react:              { singleton: true, requiredVersion: '^18.3.1' },
+  'react-dom':        { singleton: true, requiredVersion: '^18.3.1' },
+  '@reduxjs/toolkit': { singleton: true, requiredVersion: '^2.5.0' },
+  'react-redux':      { singleton: true, requiredVersion: '^9.2.0' },
+  '@carbon/react':    { singleton: true, requiredVersion: '^1.67.0' },
+} as any   // 'as any' required — singleton/requiredVersion typed as commented-out in plugin types
+```
+
+### Local MF dev
+`@originjs/vite-plugin-federation` only generates `remoteEntry.js` on `vite build`, NOT `vite dev`.
+For MF local dev: `pnpm --filter @tripplanner/browser-app build && pnpm --filter @tripplanner/browser-app preview`
+
+### Shell Redux singleton
+The shell's Redux store is shared via MF. Settings panels use `useAppSelector` and `useAppDispatch` from the shell's store singleton — no local store needed for settings state.
+
+### Production deployment
+trips.jim.software (Vercel) — auto-deploys on push to main.
+Branch protection: PR required, rebase-only merge (GitHub Ruleset).
