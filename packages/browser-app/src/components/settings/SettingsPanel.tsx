@@ -1,28 +1,32 @@
 /**
  * TripPlanner SettingsPanel — exposed via MF './Settings' to the shell.
  *
- * Shell provides the <Modal> chrome. This component owns form fields, reads
- * from the shell's shared Redux store, and dispatches updates back.
+ * Shell provides the <Modal> chrome. This component reads from the shell's
+ * shared Redux store and dispatches updates via action type string.
  *
- * Dispatch pattern: sub-apps can't import from the shell (circular MF dep).
- * Use action type string — valid Redux, store is shared via MF singleton.
- *
- * Sensitive keys (ANTHROPIC_API_KEY, OPENAI_API_KEY) stay server-side.
- * Only the API base URL (non-sensitive) and preferences go through Redux.
+ * Connection status: probes GET /health on the TripPlanner API server.
+ * URL is derived from the Redux override or env default so it reflects
+ * whatever is currently configured — no redirect to standalone app.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   TextInput,
   Select,
   SelectItem,
+  InlineLoading,
+  Button,
   FormGroup,
+  Tag,
 } from '@carbon/react'
+import { Renew } from '@carbon/icons-react'
 import './SettingsPanel.css'
 
 const ACTION_TYPE = 'settings/updateTripPlannerSettings'
-const DEFAULT_API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3011'
+// Dev default: Vite proxy forwards /api → localhost:3011 in standalone mode.
+// In the shell MF context there is no Vite proxy, so we need the explicit URL.
+const DEFAULT_API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3011'
 
 interface TripSettings {
   apiBaseUrl: string
@@ -38,12 +42,42 @@ const DEFAULTS: TripSettings = {
   defaultBudgetCategory: 'mid-range',
 }
 
+// ── Connection status hook ────────────────────────────────────────────────────
+
+type ConnStatus = 'idle' | 'checking' | 'connected' | 'unreachable'
+
+function useConnectionStatus(apiBaseUrl: string) {
+  const [status, setStatus] = useState<ConnStatus>('idle')
+
+  const check = useCallback(async () => {
+    setStatus('checking')
+    try {
+      const healthUrl = new URL('/health', apiBaseUrl || DEFAULT_API_BASE_URL).href
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 4000)
+      const res = await fetch(healthUrl, { signal: controller.signal })
+      clearTimeout(timer)
+      setStatus(res.ok ? 'connected' : 'unreachable')
+    } catch {
+      setStatus('unreachable')
+    }
+  }, [apiBaseUrl])
+
+  useEffect(() => { check() }, [check])
+
+  return { status, recheck: check }
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function SettingsPanel({ onClose: _onClose }: { onClose?: () => void }) {
   const dispatch = useDispatch()
   const stored =
     useSelector((s: any) => s?.settings?.apps?.['tripplanner'] as TripSettings | undefined) ?? DEFAULTS
 
-  // API URL — save on blur to avoid partial-URL dispatches while typing
+  const effectiveUrl = stored.apiBaseUrl || DEFAULT_API_BASE_URL
+  const { status, recheck } = useConnectionStatus(stored.apiBaseUrl)
+
   const [apiBaseUrl, setApiBaseUrl] = useState(stored.apiBaseUrl)
 
   function handleApiUrlBlur() {
@@ -70,6 +104,20 @@ export default function SettingsPanel({ onClose: _onClose }: { onClose?: () => v
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiBaseUrl(e.target.value)}
           onBlur={handleApiUrlBlur}
         />
+
+        <div className="settings-connection-row">
+          <ConnectionIndicator status={status} url={effectiveUrl} />
+          <Button
+            kind="ghost"
+            size="sm"
+            renderIcon={Renew}
+            iconDescription="Re-check"
+            hasIconOnly
+            onClick={recheck}
+            disabled={status === 'checking'}
+            className="settings-recheck-btn"
+          />
+        </div>
       </FormGroup>
 
       {/* ── Preferences ──────────────────────────────────────────────────── */}
@@ -115,4 +163,35 @@ export default function SettingsPanel({ onClose: _onClose }: { onClose?: () => v
       </FormGroup>
     </div>
   )
+}
+
+// ── Status indicator ──────────────────────────────────────────────────────────
+
+function ConnectionIndicator({ status, url }: { status: ConnStatus; url: string }) {
+  if (status === 'checking') {
+    return (
+      <InlineLoading
+        description="Checking connection…"
+        status="active"
+        className="settings-conn-loading"
+      />
+    )
+  }
+  if (status === 'connected') {
+    return (
+      <span className="settings-conn-status">
+        <Tag type="green" size="sm">Connected</Tag>
+        <span className="settings-conn-url">{url}</span>
+      </span>
+    )
+  }
+  if (status === 'unreachable') {
+    return (
+      <span className="settings-conn-status">
+        <Tag type="red" size="sm">Unreachable</Tag>
+        <span className="settings-conn-url">{url}</span>
+      </span>
+    )
+  }
+  return null
 }
