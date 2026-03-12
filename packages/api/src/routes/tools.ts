@@ -17,70 +17,67 @@ router.get('/', (_req: Request, res: Response) => {
     tools: [
       {
         name: 'chat',
-        endpoint: '/api/v1/chat/message',
-        method: 'POST',
+        endpoint: 'POST /api/v1/chat/message',
         description: 'Send a message to the trip-planning AI assistant (RAG-augmented)',
-        input: {
-          type: 'object',
-          required: ['threadId', 'message'],
-          properties: {
-            threadId: { type: 'string', description: 'Existing thread ID' },
-            message: { type: 'string', description: 'User message' },
-          },
-        },
+        input: { threadId: 'string', message: 'string' },
         deprecated: false,
       },
       {
         name: 'chat_stream',
-        endpoint: '/api/v1/chat/stream',
-        method: 'POST',
-        description: 'SSE streaming chat endpoint (stub — full streaming coming soon)',
-        input: {
-          type: 'object',
-          required: ['threadId', 'message'],
-          properties: {
-            threadId: { type: 'string', description: 'Existing thread ID' },
-            message: { type: 'string', description: 'User message' },
-          },
-        },
+        endpoint: 'POST /api/v1/chat/stream',
+        description: 'SSE streaming chat endpoint',
+        input: { threadId: 'string', message: 'string' },
         deprecated: false,
       },
       {
         name: 'create_thread',
-        endpoint: '/api/v1/threads',
-        method: 'POST',
+        endpoint: 'POST /api/v1/threads',
         description: 'Create a new conversation thread for a user',
-        input: {
-          type: 'object',
-          required: ['userId', 'title'],
-          properties: {
-            userId: { type: 'string', description: 'User identifier' },
-            title: { type: 'string', description: 'Thread title' },
-          },
-        },
+        input: { userId: 'string', title: 'string' },
         deprecated: false,
       },
       {
         name: 'get_threads',
-        endpoint: '/api/v1/threads',
-        method: 'GET',
+        endpoint: 'GET /api/v1/threads',
         description: 'Retrieve all threads for a user',
-        input: {
-          type: 'object',
-          required: ['userId'],
-          properties: {
-            userId: { type: 'string', description: 'User identifier (query param)' },
-          },
-        },
+        input: { userId: 'string (query param)' },
+        deprecated: false,
+      },
+      {
+        name: 'import_chatgpt_transcript',
+        endpoint: 'POST /api/v1/integrations/chatgpt/import',
+        description: 'Import a ChatGPT conversation transcript (pasted text) as a travel context document',
+        input: { userId: 'string', content: 'string (JSON or text transcript)', threadId: 'string (optional)' },
+        deprecated: false,
+      },
+      {
+        name: 'import_chatgpt_file',
+        endpoint: 'POST /api/v1/integrations/chatgpt/import/file',
+        description: 'Import a ChatGPT transcript from a file upload',
+        input: { userId: 'string', file: 'multipart/form-data', threadId: 'string (optional)' },
+        deprecated: false,
+      },
+      {
+        name: 'import_intelligent',
+        endpoint: 'POST /api/v1/integrations/chatgpt/import/intelligent',
+        description: 'Full multi-phase intelligent import with SSE progress updates — parses, embeds, and extracts trip data',
+        input: { userId: 'string', content: 'string' },
+        deprecated: false,
+      },
+      {
+        name: 'extract_trip',
+        endpoint: 'POST /api/v1/integrations/chatgpt/extract-trip',
+        description: 'Extract structured trip data (destinations, dates, travelers, preferences) from a ChatGPT transcript',
+        input: { content: 'string (transcript text)' },
         deprecated: false,
       },
     ],
-    dataEndpoints: [
-      { endpoint: '/api/v1/integrations/chatgpt/import', method: 'POST', description: 'Import ChatGPT transcript as travel context document' },
-      { endpoint: '/api/v1/integrations/embeddings/generate', method: 'POST', description: 'Generate embeddings for all pending documents' },
-      { endpoint: '/api/v1/integrations/openai/status', method: 'GET', description: 'Check OpenAI API key configuration status' },
-      { endpoint: '/health', method: 'GET', description: 'Health check' },
-    ],
+    dataEndpoints: {
+      threads: 'GET/POST /api/v1/threads',
+      documents: 'GET /api/v1/integrations/documents',
+      openaiStatus: 'GET /api/v1/integrations/openai/status',
+      progressStream: 'GET /api/v1/integrations/process/:processId/stream',
+    },
   });
 });
 
