@@ -12,7 +12,7 @@ TripPlanner is an intelligent travel planning platform that helps users organize
   - Full interactive chat on dedicated tab
   - Persistent condensed chat that follows you across tabs
 - **Thread Management**: Right-side sidebar for managing multiple conversation threads
-- **App Switcher**: Navigate between sibling applications (TripPlanner, BlogEngine, CV Builder)
+- **App Switcher**: Navigate between sibling applications (TripPlanner, BlogEngine, Resume Builder, Lean Canvas)
 - **Carbon Design System**: Modern, accessible UI built with IBM Carbon Design System
 - **Dark/Light Theme**: Toggle between themes via header button
 
@@ -157,7 +157,8 @@ ANTHROPIC_API_KEY=your_api_key_here
 The header contains an app switcher for navigating between related applications:
 - **TripPlanner**: http://localhost:3010 (this app)
 - **BlogEngine**: http://localhost:3005
-- **CV Builder**: http://localhost:3000
+- **Resume Builder**: http://localhost:3000
+- **Lean Canvas**: (see App Switcher for port)
 
 Edit the port mappings in `packages/browser-app/src/App.tsx` if needed.
 
@@ -224,7 +225,7 @@ MIT
 ## Related Projects
 
 - [BlogEngine](../blogengine) - AI-powered blog and documentation generation
-- [CV Builder](../cv-builder) - AI-powered resume builder
+- [Resume Builder](../cv-builder) - AI-powered resume builder
 
 ---
 
