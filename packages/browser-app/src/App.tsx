@@ -33,7 +33,7 @@ function AppContent() {
   const applications = [
     'TripPlanner',
     'BlogEngine',
-    'CV Builder',
+    'Resume Builder',
     'Project Manager',
     'Analytics Dashboard',
   ];
@@ -42,7 +42,7 @@ function AppContent() {
   const appPorts: Record<string, number> = {
     'TripPlanner': 3010,
     'BlogEngine': 3005,
-    'CV Builder': 3000,
+    'Resume Builder': 3000,
   };
 
   const filteredApplications = applications.filter(app =>
