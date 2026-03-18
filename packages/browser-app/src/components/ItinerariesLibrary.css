@@ -52,12 +52,12 @@
 
 .timeline-segment-sleek.active {
   background: var(--cds-link-primary);
-  box-shadow: 0 2px 6px rgba(0, 113, 227, 0.3);
+  box-shadow: 0 2px 6px var(--cds-shadow);
 }
 
 .timeline-segment-sleek:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 113, 227, 0.4);
+  box-shadow: 0 4px 8px var(--cds-shadow);
 }
 
 .timeline-segment-sleek.active:hover {
@@ -320,8 +320,8 @@
   align-items: center;
   justify-content: flex-start;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, rgba(0, 113, 227, 0.08) 0%, rgba(13, 104, 229, 0.04) 100%);
-  border: 2px solid rgba(0, 113, 227, 0.2);
+  background: color-mix(in srgb, var(--cds-link-primary) 6%, var(--cds-layer-01));
+  border: 2px solid var(--cds-border-subtle-01);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -337,15 +337,15 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(0, 113, 227, 0.12) 0%, rgba(13, 104, 229, 0.06) 100%);
+  background: var(--cds-layer-hover);
   opacity: 0;
   transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
 }
 
 .filter-pictogram-card:hover {
-  border-color: rgba(0, 113, 227, 0.4);
-  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.15);
+  border-color: var(--cds-link-primary);
+  box-shadow: 0 4px 16px var(--cds-shadow);
 }
 
 .filter-pictogram-card:hover::before {
@@ -359,7 +359,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #0071e3;
+  color: var(--cds-link-primary);
   position: relative;
   z-index: 1;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -367,69 +367,22 @@
 
 .filter-pictogram-card:hover .pictogram-wrapper {
   transform: scale(1.05);
-  color: #0062cc;
+  color: var(--cds-link-primary-hover);
 }
 
-/* Specific card color variations with subtle asymmetric positioning */
-.transit-card {
-  background: linear-gradient(135deg, rgba(0, 113, 227, 0.08) 0%, rgba(13, 104, 229, 0.04) 100%);
-  border-color: rgba(0, 113, 227, 0.25);
-  margin-top: -1px;
-  border-radius: 4px;
-}
-
-.transit-card:hover {
-  transform: translateY(-3px);
-}
-
-.transit-card .pictogram-wrapper {
-  color: #0071e3;
-}
-
-.meals-card {
-  background: linear-gradient(135deg, rgba(13, 104, 229, 0.08) 0%, rgba(33, 150, 243, 0.04) 100%);
-  border-color: rgba(13, 104, 229, 0.25);
-  margin-top: 1px;
-  border-radius: 4px;
-}
-
-.meals-card:hover {
-  transform: translateY(-3px);
-}
-
-.meals-card .pictogram-wrapper {
-  color: #0d68e5;
-}
-
-.reservations-card {
-  background: linear-gradient(135deg, rgba(33, 150, 243, 0.08) 0%, rgba(66, 165, 245, 0.04) 100%);
-  border-color: rgba(33, 150, 243, 0.25);
-  margin-top: -2px;
-  border-radius: 4px;
-}
-
-.reservations-card:hover {
-  transform: translateY(-3px);
-}
-
-.reservations-card .pictogram-wrapper {
-  color: #2196f3;
-}
-
-.lodging-card {
-  background: linear-gradient(135deg, rgba(66, 165, 245, 0.08) 0%, rgba(100, 181, 246, 0.04) 100%);
-  border-color: rgba(66, 165, 245, 0.25);
-  margin-top: 0px;
-  border-radius: 4px;
-}
-
+/* Card hover lift — shared across all filter card variants */
+.transit-card:hover,
+.meals-card:hover,
+.reservations-card:hover,
 .lodging-card:hover {
   transform: translateY(-3px);
 }
 
-.lodging-card .pictogram-wrapper {
-  color: #42a5f5;
-}
+/* Asymmetric positioning preserved for visual rhythm */
+.transit-card { margin-top: -1px; }
+.meals-card   { margin-top:  1px; }
+.reservations-card { margin-top: -2px; }
+.lodging-card { margin-top:   0; }
 
 .filter-pictogram-content {
   display: flex;
@@ -452,10 +405,7 @@
 .filter-pictogram-count {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #0071e3 0%, #2196f3 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--cds-link-primary);
   line-height: 1;
   margin-top: -2px;
 }
