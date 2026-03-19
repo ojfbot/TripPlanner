@@ -8,7 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "storybook": "storybook dev -p 6011",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@carbon/icons-react": "catalog:",
@@ -27,10 +29,14 @@
   },
   "devDependencies": {
     "@originjs/vite-plugin-federation": "^1.4.1",
+    "@storybook/addon-essentials": "~8.4.7",
+    "@storybook/react": "~8.4.7",
+    "@storybook/react-vite": "~8.4.7",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "sass": "catalog:",
+    "storybook": "~8.4.7",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-css-injected-by-js": "^4.0.1"
