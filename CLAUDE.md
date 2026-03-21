@@ -51,6 +51,14 @@ pnpm lint             # Lint all packages
 pnpm format           # Format with Prettier
 ```
 
+### Storybook
+
+```bash
+pnpm storybook:build  # Build Storybook (also runs in CI as a merge gate)
+```
+
+Storybook `~8.4.0` is configured with `.storybook/main.ts` + `preview.ts`. Stories cover itinerary panel components (`DayWeekPanel`, `ItinerariesOverviewTile`, and panel variants). The CI pipeline enforces a Storybook build gate on every push and PR — a broken story blocks merge.
+
 ### Security
 
 ```bash
