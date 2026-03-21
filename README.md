@@ -44,6 +44,7 @@ tripplanner/
 - **Package Manager**: pnpm 9.15+
 - **Monorepo**: Lerna + pnpm workspaces
 - **Styling**: Sass (SCSS)
+- **Component Development**: Storybook ~8.4.0
 
 ## Getting Started
 
@@ -97,6 +98,9 @@ pnpm type-check
 
 # Build all packages
 pnpm build
+
+# Build Storybook (also runs in CI as a merge gate)
+pnpm storybook:build
 
 # Run security verification
 pnpm security:verify
@@ -183,6 +187,7 @@ Edit the port mappings in `packages/browser-app/src/App.tsx` if needed.
 - `pnpm dev:api` - Start API server only
 - `pnpm build` - Build all packages
 - `pnpm type-check` - Run TypeScript type checking
+- `pnpm storybook:build` - Build Storybook (CI merge gate)
 - `pnpm security:verify` - Run security audit
 - `pnpm clean` - Clean all build outputs
 
@@ -191,10 +196,11 @@ Edit the port mappings in `packages/browser-app/src/App.tsx` if needed.
 1. Create a feature branch from `main`
 2. Make your changes
 3. Run `pnpm type-check` to ensure no type errors
-4. Run `pnpm security:verify` to check security
-5. Commit with clear, descriptive messages
-6. Pre-commit hooks will automatically scan for secrets
-7. Push and create a pull request
+4. Run `pnpm storybook:build` to ensure Storybook builds cleanly (CI will block merge if this fails)
+5. Run `pnpm security:verify` to check security
+6. Commit with clear, descriptive messages
+7. Pre-commit hooks will automatically scan for secrets
+8. Push and create a pull request
 
 ### Commit Conventions
 
