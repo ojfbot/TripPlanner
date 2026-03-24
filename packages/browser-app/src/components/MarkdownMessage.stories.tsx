@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import MarkdownMessage from './MarkdownMessage'
+import { MarkdownMessage } from '@ojfbot/frame-ui-components'
+import rehypeHighlight from 'rehype-highlight'
 
 const meta: Meta<typeof MarkdownMessage> = {
   title: 'Components/MarkdownMessage',
   component: MarkdownMessage,
+  args: {
+    rehypePlugins: [rehypeHighlight],
+  },
 }
 
 export default meta

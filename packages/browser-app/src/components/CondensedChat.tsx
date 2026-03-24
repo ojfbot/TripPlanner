@@ -1,13 +1,18 @@
 import { useRef, useEffect, useCallback } from 'react';
 import {
-  TextInput,
-  TextArea,
-  Button,
-  IconButton,
-  Tile,
   Tag,
+  IconButton,
 } from '@carbon/react';
-import { SendAlt, Minimize, ChatBot, Microphone } from '@carbon/icons-react';
+import { Microphone } from '@carbon/icons-react';
+import {
+  ChatShell,
+  ChatMessage,
+  MarkdownMessage,
+} from '@ojfbot/frame-ui-components';
+import type { ChatDisplayState } from '@ojfbot/frame-ui-components';
+import '@ojfbot/frame-ui-components/styles/chat-shell';
+import '@ojfbot/frame-ui-components/styles/markdown-message';
+import rehypeHighlight from 'rehype-highlight';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   addMessage,
@@ -18,11 +23,10 @@ import {
 } from '../store/slices/chatSlice';
 import { TabKey } from '../models/navigation';
 import { CONDENSED_QUICK_ACTIONS } from '../config/quickActions';
-import { UNREAD_BADGE_TEXT } from '../config/ui';
-import MarkdownMessage from './MarkdownMessage';
 import '../styles/variables.css';
 import '../styles/animations.css';
-import './CondensedChat.css';
+
+const rehypePlugins = [rehypeHighlight];
 
 interface CondensedChatProps {
   sidebarExpanded?: boolean;
@@ -34,87 +38,22 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
     state => state.chat
   );
   const currentTab = useAppSelector(state => state.navigation.currentTab);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const expandingRef = useRef(false);
-
-  const isExpanded = viewState === 'expanded';
-
-  // Debug: Monitor viewState changes
-  useEffect(() => {
-    console.log('[CondensedChat] viewState changed to:', viewState, 'isExpanded:', isExpanded);
-  }, [viewState, isExpanded]);
-
-  /**
-   * Auto-scroll to bottom with double requestAnimationFrame
-   *
-   * Using double RAF ensures the scroll happens after:
-   * 1. First RAF: Browser finishes current layout/paint
-   * 2. Second RAF: DOM updates are committed and heights are final
-   *
-   * This prevents scroll-to-bottom from running before message heights
-   * are calculated, which would result in not scrolling far enough.
-   */
-  const scrollToBottom = useCallback((smooth = false) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (messagesContainerRef.current) {
-          const container = messagesContainerRef.current;
-          if (smooth) {
-            container.scrollTo({
-              top: container.scrollHeight,
-              behavior: 'smooth'
-            });
-          } else {
-            container.scrollTop = container.scrollHeight;
-          }
-        }
-      });
-    });
-  }, []);
-
-  // Auto-focus input when expanding
-  useEffect(() => {
-    if (isExpanded) {
-      setTimeout(() => {
-        textAreaRef.current?.focus();
-      }, 100);
-    }
-  }, [isExpanded]);
-
-  // Auto-scroll when messages change
-  useEffect(() => {
-    if (isExpanded && messages.length > 0) {
-      scrollToBottom();
-    }
-  }, [messages, isExpanded, scrollToBottom]);
 
   // Auto-collapse chat when switching away from Interactive tab
-  // Only trigger on tab change, not on every viewState change
   const prevTabRef = useRef(currentTab);
   useEffect(() => {
     const prevTab = prevTabRef.current;
     prevTabRef.current = currentTab;
 
-    // Only auto-collapse when switching FROM Interactive TO another tab
     if (prevTab === TabKey.INTERACTIVE && currentTab !== TabKey.INTERACTIVE && viewState === 'expanded') {
-      console.log('[CondensedChat] Auto-collapsing due to tab switch from Interactive');
       dispatch(setViewState('collapsed'));
     }
   }, [currentTab, viewState, dispatch]);
 
-  const handleSend = useCallback(async (messageText?: string) => {
-    const textToSend = messageText || draftInput.trim();
-    if (!textToSend || isLoading) return;
+  const handleSend = useCallback((messageText: string) => {
+    if (!messageText || isLoading) return;
 
-    const userMessage = textToSend;
-    dispatch(addMessage({ role: 'user', content: userMessage }));
-
-    // Only clear draft if message came from draft input (not from quick action)
-    if (!messageText) {
-      dispatch(setDraftInput(''));
-    }
-
+    dispatch(addMessage({ role: 'user', content: messageText }));
     dispatch(setIsLoading(true));
 
     // TODO: Connect to API
@@ -125,206 +64,102 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
       }));
       dispatch(setIsLoading(false));
     }, 1000);
-  }, [draftInput, isLoading, dispatch]);
+  }, [isLoading, dispatch]);
 
   const handleQuickAction = useCallback((prompt: string) => {
-    // Don't set draft, just send directly to avoid input flash
     handleSend(prompt);
   }, [handleSend]);
 
-  const handleToggleExpand = useCallback(() => {
-    // Toggle between collapsed and expanded
-    if (isExpanded) {
-      dispatch(setViewState('collapsed'));
-    } else {
-      dispatch(setViewState('expanded'));
+  const handleDisplayStateChange = useCallback((state: ChatDisplayState) => {
+    dispatch(setViewState(state));
+    if (state === 'expanded') {
       dispatch(markMessagesAsRead());
     }
-  }, [isExpanded, dispatch]);
+  }, [dispatch]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  }, [handleSend]);
+  const handleDraftChange = useCallback((value: string) => {
+    dispatch(setDraftInput(value));
+  }, [dispatch]);
 
-  const handleInputFocus = useCallback(() => {
-    // When not expanded, focusing the input expands the chat
-    // Use ref to prevent re-triggering during auto-focus after expand
-    console.log('[CondensedChat] handleInputFocus called, isExpanded:', isExpanded, 'viewState:', viewState, 'expandingRef:', expandingRef.current);
-    if (!isExpanded && !expandingRef.current) {
-      console.log('[CondensedChat] Dispatching setViewState(expanded)');
-      expandingRef.current = true;
-      dispatch(setViewState('expanded'));
-      // Reset after animation completes
-      setTimeout(() => {
-        console.log('[CondensedChat] Resetting expandingRef');
-        expandingRef.current = false;
-      }, 200);
-    }
-  }, [isExpanded, viewState, dispatch]);
+  const microphoneButton = (
+    <IconButton
+      label="Voice input"
+      onClick={() => {
+        // TODO: Implement voice input functionality
+      }}
+      disabled={isLoading}
+      kind="ghost"
+      size="sm"
+    >
+      <Microphone size={20} />
+    </IconButton>
+  );
 
   return (
-    <div className={`condensed-chat ${viewState} ${sidebarExpanded ? 'with-sidebar' : ''}`}>
-      <div
-        className="condensed-header"
-        onClick={handleToggleExpand}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleToggleExpand();
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-label={isExpanded ? 'Collapse chat' : 'Expand chat'}
-        style={{ cursor: 'pointer' }}
-      >
-        <div className="header-left">
-          <ChatBot size={20} />
-          <span className="header-title">AI Assistant</span>
-          {!isExpanded && unreadCount > 0 && (
-            <span className="unread-badge">{UNREAD_BADGE_TEXT}</span>
-          )}
-        </div>
-        <div className="header-actions">
-          {isExpanded && (
-            <IconButton
-              label="Minimize chat"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleToggleExpand();
-              }}
-              size="sm"
-              kind="ghost"
-            >
-              <Minimize size={16} />
-            </IconButton>
-          )}
-        </div>
-      </div>
-
-      {isExpanded && (
-        <div className="chat-messages-container" ref={messagesContainerRef}>
-          {messages.length === 0 && (
-            <div className="welcome-message-condensed">
-              <h3>Welcome to TripPlanner</h3>
-              <p>Your AI travel assistant. Start planning your next adventure!</p>
-              <div className="quick-actions-condensed">
-                <div className="quick-actions-label">Quick Actions</div>
-                <div className="quick-actions-grid-condensed">
-                  {CONDENSED_QUICK_ACTIONS.map((action, idx) => (
-                    <Tag
-                      key={idx}
-                      type={action.type}
-                      onClick={() => handleQuickAction(action.prompt)}
-                      onKeyDown={(e: React.KeyboardEvent) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleQuickAction(action.prompt);
-                        }
-                      }}
-                      className="quick-action-tag"
-                      size="sm"
-                      role="button"
-                      tabIndex={0}
-                    >
-                      <span className="action-icon">{action.icon}</span>
-                      {action.label}
-                    </Tag>
-                  ))}
-                </div>
-              </div>
+    <ChatShell
+      displayState={viewState as ChatDisplayState}
+      onDisplayStateChange={handleDisplayStateChange}
+      sidebarExpanded={sidebarExpanded}
+      title="AI Assistant"
+      isLoading={isLoading}
+      unreadCount={unreadCount}
+      draftInput={draftInput}
+      onDraftChange={handleDraftChange}
+      onSend={handleSend}
+      placeholder="Ask me anything..."
+      inputDisabled={isLoading}
+      inputExtra={microphoneButton}
+    >
+      {messages.length === 0 && (
+        <div className="welcome-message-condensed">
+          <h3>Welcome to TripPlanner</h3>
+          <p>Your AI travel assistant. Start planning your next adventure!</p>
+          <div className="quick-actions-condensed">
+            <div className="quick-actions-label">Quick Actions</div>
+            <div className="quick-actions-grid-condensed">
+              {CONDENSED_QUICK_ACTIONS.map((action, idx) => (
+                <Tag
+                  key={idx}
+                  type={action.type}
+                  onClick={() => handleQuickAction(action.prompt)}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleQuickAction(action.prompt);
+                    }
+                  }}
+                  className="quick-action-tag"
+                  size="sm"
+                  role="button"
+                  tabIndex={0}
+                >
+                  <span className="action-icon">{action.icon}</span>
+                  {action.label}
+                </Tag>
+              ))}
             </div>
-          )}
-          {messages.map((msg) => (
-            <Tile key={msg.id} className={`message-tile ${msg.role}`}>
-              <div className="message-header">
-                <strong>{msg.role === 'user' ? '👤 You' : '🤖 Assistant'}</strong>
-              </div>
-              <div className="message-content">
-                {msg.role === 'user' ? (
-                  <div className="user-message">{msg.content}</div>
-                ) : (
-                  <MarkdownMessage content={msg.content} compact={true} />
-                )}
-              </div>
-            </Tile>
-          ))}
-          {isLoading && (
-            <div className="message assistant">
-              <div className="message-content loading">Thinking...</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="condensed-input-wrapper">
-          <div
-            className="textarea-container-condensed"
-            onClick={() => {
-              if (!isExpanded) {
-                console.log('[CondensedChat] Container clicked - expanding');
-                handleInputFocus();
-              }
-            }}
-            style={{ cursor: isExpanded ? 'text' : 'pointer' }}
-          >
-            {isExpanded ? (
-            <TextArea
-              ref={textAreaRef}
-              labelText="Message"
-              placeholder="Ask me anything..."
-              value={draftInput}
-              onChange={(e) => dispatch(setDraftInput(e.target.value))}
-              onKeyDown={handleKeyDown}
-              onFocus={handleInputFocus}
-              disabled={isLoading}
-              rows={3}
-              className="condensed-chat-textarea"
-            />
-          ) : (
-            <TextInput
-              id="condensed-input"
-              labelText=""
-              placeholder="Ask me anything..."
-              value={draftInput}
-              onChange={(e) => dispatch(setDraftInput(e.target.value))}
-              onKeyDown={handleKeyDown}
-              onFocus={handleInputFocus}
-              onClick={handleInputFocus}
-              disabled={isLoading}
-              size="md"
-            />
-          )}
-          <div className="input-actions-condensed">
-            <IconButton
-              label="Voice input"
-              onClick={() => {
-                // TODO: Implement voice input functionality
-              }}
-              disabled={isLoading}
-              className="microphone-button-input-condensed"
-              kind="ghost"
-              size="sm"
-            >
-              <Microphone size={20} />
-            </IconButton>
-            <Button
-              renderIcon={SendAlt}
-              onClick={() => handleSend()}
-              disabled={!draftInput.trim() || isLoading}
-              size="sm"
-              kind="primary"
-              hasIconOnly
-              iconDescription="Send"
-              className="send-button-inline-condensed"
-            />
           </div>
         </div>
-      </div>
-    </div>
+      )}
+      {messages.map((msg) => (
+        <ChatMessage key={msg.id} role={msg.role}>
+          {msg.role === 'user' ? (
+            <div className="user-message">{msg.content}</div>
+          ) : (
+            <MarkdownMessage
+              content={msg.content}
+              compact={true}
+              rehypePlugins={rehypePlugins}
+            />
+          )}
+        </ChatMessage>
+      ))}
+      {isLoading && (
+        <ChatMessage role="assistant" isStreaming>
+          <span>Thinking...</span>
+        </ChatMessage>
+      )}
+    </ChatShell>
   );
 }
 
