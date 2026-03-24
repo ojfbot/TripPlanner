@@ -33,9 +33,9 @@ tripplanner/
 ```
 
 ## Tech Stack
-
 - **Frontend**: React 18 + TypeScript + Vite
 - **UI Framework**: Carbon Design System (@carbon/react v1.67)
+- **Shared Components**: `@ojfbot/frame-ui-components`
 - **State Management**: Redux Toolkit
 - **Backend**: Express.js + Node.js
 - **AI/LLM**: Anthropic Claude via LangGraph
@@ -128,11 +128,13 @@ pnpm clean
 - React frontend application
 - Components:
   - `InteractiveChat` - Main chat interface
-  - `CondensedChat` - Persistent floating chat
-  - `ThreadSidebar` - Thread management panel
+  - `CondensedChat` - from `@ojfbot/frame-ui-components`
+  - `ThreadSidebar` - from `@ojfbot/frame-ui-components`
+  - `MarkdownMessage` - from `@ojfbot/frame-ui-components`
+  - `ErrorBoundary` - from `@ojfbot/frame-ui-components`
   - `Dashboard` - Tab-based layout
 - Redux state management
-- Carbon Design System UI
+- Carbon Design System UI via `@ojfbot/frame-ui-components`
 
 ### State Management
 
@@ -169,6 +171,7 @@ Edit the port mappings in `packages/browser-app/src/App.tsx` if needed.
 ## Security
 
 - **Pre-commit Hooks**: Automated checks for API keys and build artifacts
+- **CI Secret Scanning**: TruffleHog secret detection runs in CI on every push and pull request
 - **Gitignore**: Comprehensive ignore patterns for sensitive data
 - **Security Scripts**: Run `pnpm security:verify` to check for security issues
 
@@ -230,8 +233,14 @@ MIT
 
 ## Related Projects
 
+TripPlanner is part of a nine-repo fleet federated into `@ojfbot/shell` at `frame.jim.software`:
+
 - [BlogEngine](../blogengine) - AI-powered blog and documentation generation
 - [Resume Builder](../cv-builder) - AI-powered resume builder
+- [Lean Canvas](../lean-canvas) - Lean canvas planning tool
+- [purefoy](../purefoy) - Podcast/episodes dashboard
+- [core-reader](../core-reader) - Reader application
+- [@ojfbot/frame-ui-components](../frame-ui-components) - Shared UI component library
 
 ---
 
