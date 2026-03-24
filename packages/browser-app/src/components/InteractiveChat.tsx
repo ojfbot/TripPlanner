@@ -16,11 +16,15 @@ import {
 } from '../store/slices/chatSlice';
 import { TabKey } from '../models/navigation';
 import { INTERACTIVE_QUICK_ACTIONS } from '../config/quickActions';
-import MarkdownMessage from './MarkdownMessage';
+import { MarkdownMessage } from '@ojfbot/frame-ui-components';
+import '@ojfbot/frame-ui-components/styles/markdown-message';
+import rehypeHighlight from 'rehype-highlight';
 import ImportAgentBadge from './ImportAgentBadge';
 import '../styles/variables.css';
 import '../styles/animations.css';
 import './InteractiveChat.css';
+
+const rehypePlugins = [rehypeHighlight];
 
 function InteractiveChat() {
   const dispatch = useAppDispatch();
@@ -134,7 +138,7 @@ function InteractiveChat() {
               {msg.role === 'user' ? (
                 <div className="user-message">{msg.content}</div>
               ) : (
-                <MarkdownMessage content={msg.content} />
+                <MarkdownMessage content={msg.content} rehypePlugins={rehypePlugins} />
               )}
             </div>
           </Tile>

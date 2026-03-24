@@ -32,7 +32,7 @@ env.json
 *.swo
 *~
 .claude/settings.local.json
-.claude/commands/
+.claude/skills/
 .claude/settings.json
 
 # OS
@@ -75,7 +75,7 @@ test-*.js
 
 # Managed by core — do not commit
 domain-knowledge/
-.claude/commands/
+.claude/skills/
 decisions/
 personal-knowledge/
 .claude/settings.json

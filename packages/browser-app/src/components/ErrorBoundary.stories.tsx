@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
-import ErrorBoundary from './ErrorBoundary'
+import { ErrorBoundary } from '@ojfbot/frame-ui-components'
 
 // A component that throws an error for testing
 function ThrowingComponent(): React.ReactElement {

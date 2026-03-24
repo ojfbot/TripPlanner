@@ -259,6 +259,9 @@ importers:
       '@carbon/styles':
         specifier: 'catalog:'
         version: 1.96.0(sass@1.96.0)
+      '@ojfbot/frame-ui-components':
+        specifier: file:../../../frame-ui-components
+        version: file:../frame-ui-components(@carbon/react@1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.1.0(@types/react@18.3.27)(react@18.3.1))(react@18.3.1)(remark-gfm@4.0.1)
       '@reduxjs/toolkit':
         specifier: 'catalog:'
         version: 2.11.1(react-redux@9.2.0(@types/react@18.3.27)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
@@ -1179,6 +1182,15 @@ packages:
 
   '@octokit/types@13.10.0':
     resolution: {integrity: sha512-ifLaO34EbbPj0Xgro4G5lP5asESjwHracYJvVaPIyXMuiuXLlhic3S47cBdTb+jfODkTE5YtGCLt3Ay3+J97sA==}
+
+  '@ojfbot/frame-ui-components@file:../frame-ui-components':
+    resolution: {directory: ../frame-ui-components, type: directory}
+    peerDependencies:
+      '@carbon/react': '>=1'
+      react: '>=18'
+      react-dom: '>=18'
+      react-markdown: '>=9'
+      remark-gfm: '>=4'
 
   '@originjs/vite-plugin-federation@1.4.1':
     resolution: {integrity: sha512-Uo08jW5pj1t58OUKuZNkmzcfTN2pqeVuAWCCiKf/75/oll4Efq4cHOqSE1FXMlvwZNGDziNdDyBbQ5IANem3CQ==}
@@ -6056,6 +6068,14 @@ snapshots:
   '@octokit/types@13.10.0':
     dependencies:
       '@octokit/openapi-types': 24.2.0
+
+  '@ojfbot/frame-ui-components@file:../frame-ui-components(@carbon/react@1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.1.0(@types/react@18.3.27)(react@18.3.1))(react@18.3.1)(remark-gfm@4.0.1)':
+    dependencies:
+      '@carbon/react': 1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-markdown: 9.1.0(@types/react@18.3.27)(react@18.3.1)
+      remark-gfm: 4.0.1
 
   '@originjs/vite-plugin-federation@1.4.1':
     dependencies:
