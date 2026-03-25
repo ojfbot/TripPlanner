@@ -8,10 +8,12 @@ import {
   ChatShell,
   ChatMessage,
   MarkdownMessage,
+  BadgeButton,
 } from '@ojfbot/frame-ui-components';
 import type { ChatDisplayState } from '@ojfbot/frame-ui-components';
 import '@ojfbot/frame-ui-components/styles/chat-shell';
 import '@ojfbot/frame-ui-components/styles/markdown-message';
+import '@ojfbot/frame-ui-components/styles/badge-button';
 import rehypeHighlight from 'rehype-highlight';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
