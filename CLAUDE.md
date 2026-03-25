@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TripPlanner is an AI-powered trip planning and itinerary management system built as a **PNPM monorepo** with Lerna. It is a **Module Federation remote** in the `@ojfbot` fleet (shell at `frame.jim.software`). It features multi-agent orchestration via LangGraph, multi-conversation thread management, and a modern UI with IBM Carbon Design System, using shared components from `@ojfbot/frame-ui-components`.
+TripPlanner is an AI-powered trip planning and itinerary management system built as a **PNPM monorepo** with Lerna. It features multi-agent orchestration via LangGraph, multi-conversation thread management, and a modern UI with IBM Carbon Design System.
 
 ## Essential Commands
 
@@ -116,8 +116,8 @@ cp .env.example .env.local
 - React 18 + TypeScript + Vite
 - IBM Carbon Design System (v1.67) for UI
 - Redux Toolkit for state management
-- UI components imported from `@ojfbot/frame-ui-components` (ErrorBoundary, MarkdownMessage, ThreadSidebar, CondensedChat, DashboardLayout, etc.)
-- Components: InteractiveChat, Dashboard
+- Components: InteractiveChat, CondensedChat, Dashboard, ThreadSidebarConnected
+- Shared UI from `@ojfbot/frame-ui-components`: DashboardLayout, ChatShell, ChatMessage, ThreadSidebar, MarkdownMessage, BadgeButton, ErrorBoundary (ADR-0030)
 - Communicates with API via axios
 - Port 3010 by default
 
@@ -146,7 +146,7 @@ Dependencies are managed via PNPM workspace catalog in `pnpm-workspace.yaml`. Wh
 TripPlanner supports multiple concurrent conversation threads:
 - Each user can have multiple active trip planning conversations
 - Threads are persisted in SQLite database
-- ThreadSidebar component (right-side panel) for thread management
+- ThreadSidebarConnected wraps shared ThreadSidebar from `@ojfbot/frame-ui-components`
 - Thread state managed via Redux (`threadsSlice`)
 
 ### Dual Chat Interfaces
@@ -179,12 +179,12 @@ Header contains a hamburger menu (left side) that opens an application switcher 
 **Layout Components**:
 - `App.tsx` - Root component with header, app switcher, theme toggle
 - `Dashboard.tsx` - Main layout with tabs and thread sidebar toggle
-- `ThreadSidebar` - imported from `@ojfbot/frame-ui-components`
+- `ThreadSidebarConnected.tsx` - Redux wrapper for shared ThreadSidebar (`@ojfbot/frame-ui-components`)
 
 **Chat Components**:
 - `InteractiveChat.tsx` - Full chat interface on Interactive tab
-- `CondensedChat` - imported from `@ojfbot/frame-ui-components`
-- `MarkdownMessage` - imported from `@ojfbot/frame-ui-components`
+- `CondensedChat.tsx` - Floating persistent chat on other tabs
+- `MarkdownMessage` - Imported from `@ojfbot/frame-ui-components` (markdown rendering with action links + badge suggestions)
 
 **Tab Content Components**:
 - `TripsLibrary.tsx` - My Trips tab (placeholder)
@@ -223,9 +223,6 @@ Header contains a hamburger menu (left side) that opens an application switcher 
 - Blocks commits containing: `sk-ant-*`, `sk-*`, `secret_*`, `ghp_*`
 - Prevents accidental commits of `env.json`, `.env`, `.env.local`
 
-**CI Security Scanning**: A TruffleHog secret-detection workflow runs in CI on every push and PR, providing fleet-wide secret scanning.
-
-**API Key Isolation**: Browser app never receives API keys. All AI and integration calls go through the backend API.
 **API Key Isolation**: Browser app never receives API keys. All AI and integration calls go through the backend API.
 
 **Rate Limiting**: API uses express-rate-limit to prevent abuse (100 requests per 15 minutes per IP).
@@ -290,12 +287,13 @@ This project follows the architecture pattern established in:
 - **BlogEngine** (port 3005) - AI-powered blog and content generation
 - **CV Builder** (port 3000) - AI-powered resume builder
 
-All projects are Module Federation sub-apps in the Frame OS fleet and share:
+All three projects share similar patterns:
 - PNPM monorepos with Lerna
 - agent-graph + api + browser-app structure
-- Carbon Design System UI via `@ojfbot/frame-ui-components` (shared component library)
+- Carbon Design System UI
 - Multi-conversation threading
 - App switcher in header
+
 ---
 
 ## Frame OS Integration
