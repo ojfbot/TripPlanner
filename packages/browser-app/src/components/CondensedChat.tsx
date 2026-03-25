@@ -8,7 +8,6 @@ import {
   ChatShell,
   ChatMessage,
   MarkdownMessage,
-  BadgeButton,
 } from '@ojfbot/frame-ui-components';
 import type { ChatDisplayState } from '@ojfbot/frame-ui-components';
 import '@ojfbot/frame-ui-components/styles/chat-shell';
