@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { ThreadSidebar } from '@ojfbot/frame-ui-components';
+import '@ojfbot/frame-ui-components/styles/thread-sidebar';
 import type { ThreadItem } from '@ojfbot/frame-ui-components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
