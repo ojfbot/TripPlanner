@@ -52,6 +52,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // Treat frame-ui-components as source (file: linked, not pre-built)
+  optimizeDeps: {
+    exclude: ['@ojfbot/frame-ui-components'],
+  },
   server: {
     port: 3010,
     cors: true,
@@ -60,6 +64,9 @@ export default defineConfig({
         target: 'http://localhost:3011',
         changeOrigin: true,
       },
+    },
+    fs: {
+      allow: ['../../..'],
     },
   },
   preview: {
