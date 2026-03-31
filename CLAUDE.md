@@ -326,3 +326,10 @@ The shell's Redux store is shared via MF. Settings panels use `useAppSelector` a
 ### Production deployment
 trips.jim.software (Vercel) — auto-deploys on push to main.
 Branch protection: PR required, rebase-only merge (GitHub Ruleset).
+
+## Deployment
+
+**NEVER deploy directly to production** via CLI (`vercel deploy --prod`, `vercel promote`, etc.).
+All production deployments go through the GitHub PR → CI → merge → automated deploy pipeline.
+The only exception is `workflow_dispatch` for manual CI triggers.
+Local Vercel CLI usage is restricted to preview deploys only.
