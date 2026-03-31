@@ -261,7 +261,7 @@ importers:
         version: 1.96.0(sass@1.96.0)
       '@ojfbot/frame-ui-components':
         specifier: file:../../../frame-ui-components
-        version: file:../frame-ui-components(@carbon/react@1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.1.0(@types/react@18.3.27)(react@18.3.1))(react@18.3.1)(remark-gfm@4.0.1)
+        version: file:../frame-ui-components(@carbon/react@1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0))(@carbon/styles@1.96.0(sass@1.96.0))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.1.0(@types/react@18.3.27)(react@18.3.1))(react@18.3.1)(remark-gfm@4.0.1)
       '@reduxjs/toolkit':
         specifier: 'catalog:'
         version: 2.11.1(react-redux@9.2.0(@types/react@18.3.27)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
@@ -1187,6 +1187,7 @@ packages:
     resolution: {directory: ../frame-ui-components, type: directory}
     peerDependencies:
       '@carbon/react': '>=1'
+      '@carbon/styles': '>=1'
       react: '>=18'
       react-dom: '>=18'
       react-markdown: '>=9'
@@ -6069,9 +6070,10 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 24.2.0
 
-  '@ojfbot/frame-ui-components@file:../frame-ui-components(@carbon/react@1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.1.0(@types/react@18.3.27)(react@18.3.1))(react@18.3.1)(remark-gfm@4.0.1)':
+  '@ojfbot/frame-ui-components@file:../frame-ui-components(@carbon/react@1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0))(@carbon/styles@1.96.0(sass@1.96.0))(react-dom@18.3.1(react@18.3.1))(react-markdown@9.1.0(@types/react@18.3.27)(react@18.3.1))(react@18.3.1)(remark-gfm@4.0.1)':
     dependencies:
       '@carbon/react': 1.97.0(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sass@1.96.0)
+      '@carbon/styles': 1.96.0(sass@1.96.0)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-markdown: 9.1.0(@types/react@18.3.27)(react@18.3.1)
