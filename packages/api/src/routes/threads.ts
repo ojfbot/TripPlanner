@@ -23,7 +23,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // Get a single thread by ID
-router.get('/:threadId', (req: Request, res: Response) => {
+router.get('/:threadId', (req: Request<{ threadId: string }>, res: Response) => {
   const { threadId } = req.params;
 
   try {
@@ -69,7 +69,7 @@ router.post('/', (req: Request, res: Response) => {
 });
 
 // Update a thread
-router.put('/:threadId', (req: Request, res: Response) => {
+router.put('/:threadId', (req: Request<{ threadId: string }>, res: Response) => {
   const { threadId } = req.params;
   const { title } = req.body;
 
@@ -98,7 +98,7 @@ router.put('/:threadId', (req: Request, res: Response) => {
 });
 
 // Delete a thread
-router.delete('/:threadId', (req: Request, res: Response) => {
+router.delete('/:threadId', (req: Request<{ threadId: string }>, res: Response) => {
   const { threadId } = req.params;
 
   try {
@@ -117,7 +117,7 @@ router.delete('/:threadId', (req: Request, res: Response) => {
 });
 
 // Get messages for a thread
-router.get('/:threadId/messages', (req: Request, res: Response) => {
+router.get('/:threadId/messages', (req: Request<{ threadId: string }>, res: Response) => {
   const { threadId } = req.params;
 
   try {
