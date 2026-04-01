@@ -282,7 +282,7 @@ router.get('/documents', (req: Request, res: Response) => {
  *
  * TODO: add auth middleware — documentId is not scoped to the requesting user.
  */
-router.get('/documents/:documentId', (req: Request, res: Response) => {
+router.get('/documents/:documentId', (req: Request<{ documentId: string }>, res: Response) => {
   const { documentId } = req.params;
 
   try {
@@ -321,7 +321,7 @@ router.get('/documents/:documentId', (req: Request, res: Response) => {
  *
  * TODO: add auth middleware — any caller who knows the documentId can delete it.
  */
-router.delete('/documents/:documentId', (req: Request, res: Response) => {
+router.delete('/documents/:documentId', (req: Request<{ documentId: string }>, res: Response) => {
   const { documentId } = req.params;
 
   try {
@@ -411,7 +411,7 @@ router.post('/chatgpt/extract-trip', async (req: Request, res: Response) => {
  * GET /api/v1/integrations/process/:processId/stream
  * Server-Sent Events endpoint for real-time progress updates
  */
-router.get('/process/:processId/stream', (req: Request, res: Response) => {
+router.get('/process/:processId/stream', (req: Request<{ processId: string }>, res: Response) => {
   const { processId } = req.params;
 
   // Set up SSE headers
