@@ -15,6 +15,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Build agent-graph (required by api type-check)
         run: pnpm --filter @tripplanner/agent-graph build
+      - name: Type-check (tsc --noEmit)
+        run: pnpm type-check
       - run: pnpm build
       - name: Build Storybook
         run: pnpm --filter @tripplanner/browser-app build-storybook
