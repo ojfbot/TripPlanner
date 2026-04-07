@@ -93,7 +93,7 @@ The application will be available at:
 ### Development
 
 ```bash
-# Type check all packages
+# Type check all packages (runs as a CI gate before build)
 pnpm type-check
 
 # Build all packages
@@ -189,7 +189,7 @@ Edit the port mappings in `packages/browser-app/src/App.tsx` if needed.
 - `pnpm dev` - Start browser app only
 - `pnpm dev:api` - Start API server only
 - `pnpm build` - Build all packages
-- `pnpm type-check` - Run TypeScript type checking
+- `pnpm type-check` - Run TypeScript type checking (`tsc --noEmit`, CI gate)
 - `pnpm storybook:build` - Build Storybook (CI merge gate)
 - `pnpm security:verify` - Run security audit
 - `pnpm clean` - Clean all build outputs
@@ -198,7 +198,7 @@ Edit the port mappings in `packages/browser-app/src/App.tsx` if needed.
 
 1. Create a feature branch from `main`
 2. Make your changes
-3. Run `pnpm type-check` to ensure no type errors
+3. Run `pnpm type-check` to ensure no type errors (CI will block merge if this fails)
 4. Run `pnpm storybook:build` to ensure Storybook builds cleanly (CI will block merge if this fails)
 5. Run `pnpm security:verify` to check security
 6. Commit with clear, descriptive messages
@@ -229,7 +229,7 @@ We use conventional commits for clear history:
 
 ## License
 
-MIT
+MIT — see [LICENSE](./LICENSE)
 
 ## Frame OS Ecosystem
 
