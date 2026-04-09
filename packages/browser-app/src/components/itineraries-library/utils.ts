@@ -1,4 +1,4 @@
-export function getCategoryColor(category: string) {
+export function getCategoryColor(category: string): 'blue' | 'red' | 'purple' | 'green' | 'cyan' | 'gray' {
   switch (category) {
     case 'transit': return 'blue';
     case 'meal': return 'red';
