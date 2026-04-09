@@ -39,7 +39,7 @@ export default function DayThemeView({ days }: DayThemeViewProps) {
                   <div className="theme-category-tags">
                     {Object.entries(categories).map(([category, count]) => (
                       <Tag key={category} size="sm" type={getCategoryColor(category)}>
-                        {count} {category}
+                        {`${count} ${category}`}
                       </Tag>
                     ))}
                   </div>
