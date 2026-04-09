@@ -17,7 +17,7 @@
     "@carbon/pictograms-react": "catalog:",
     "@carbon/react": "catalog:",
     "@carbon/styles": "catalog:",
-    "@ojfbot/frame-ui-components": "file:../../../frame-ui-components",
+    "@ojfbot/frame-ui-components": "^1.0.1",
     "@reduxjs/toolkit": "catalog:",
     "axios": "catalog:",
     "react": "catalog:",
