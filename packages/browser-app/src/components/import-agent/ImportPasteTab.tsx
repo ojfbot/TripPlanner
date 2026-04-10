@@ -1,4 +1,4 @@
-import { Button, TextArea, IconButton, Loading } from '@carbon/react';
+import { Button, TextArea, IconButton } from '@carbon/react';
 import { Copy, SendAlt, Bot } from '@carbon/icons-react';
 import { useAppDispatch } from '../../store/hooks';
 import { setExtractionPromptTemplate } from '../../store/slices/uiSlice';
@@ -19,7 +19,6 @@ interface ImportPasteTabProps {
   onApplyChanges: () => void;
   promptModifications: string;
   onPromptModificationsChange: (value: string) => void;
-  isGeneratingModifications: boolean;
   onGenerateModifications: () => void;
 }
 
@@ -37,7 +36,6 @@ export function ImportPasteTab({
   onApplyChanges,
   promptModifications,
   onPromptModificationsChange,
-  isGeneratingModifications,
   onGenerateModifications,
 }: ImportPasteTabProps) {
   const dispatch = useAppDispatch();
@@ -138,7 +136,7 @@ export function ImportPasteTab({
               Modify Request Template with AI
             </p>
             <p style={{ fontSize: '0.75rem', color: 'var(--cds-text-secondary)' }}>
-              Describe changes you want to the extraction prompt
+              AI-powered template editing is coming soon.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
@@ -147,11 +145,11 @@ export function ImportPasteTab({
                 placeholder="e.g., 'Add extra validation for hotel confirmation numbers'"
                 value={promptModifications}
                 onChange={(e) => onPromptModificationsChange(e.target.value)}
-                rows={2} disabled={isGeneratingModifications} />
+                rows={2} disabled />
             </div>
-            <IconButton label="Generate modifications" onClick={onGenerateModifications}
-              disabled={!promptModifications.trim() || isGeneratingModifications} kind="primary" size="lg">
-              {isGeneratingModifications ? <Loading small withOverlay={false} /> : <SendAlt size={20} />}
+            <IconButton label="Coming soon" onClick={onGenerateModifications}
+              disabled kind="primary" size="lg">
+              <SendAlt size={20} />
             </IconButton>
           </div>
         </div>

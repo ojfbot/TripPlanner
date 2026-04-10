@@ -90,7 +90,6 @@ function ImportAgentModal({ open, onClose, onComplete }: ImportAgentModalProps) 
                     onApplyChanges={agent.handleApplyChanges}
                     promptModifications={agent.promptModifications}
                     onPromptModificationsChange={agent.setPromptModifications}
-                    isGeneratingModifications={agent.isGeneratingModifications}
                     onGenerateModifications={agent.handleGenerateModifications}
                   />
                 </TabPanel>
