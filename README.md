@@ -35,7 +35,7 @@ tripplanner/
 ## Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite
 - **UI Framework**: Carbon Design System (@carbon/react v1.67)
-- **Shared Components**: `@ojfbot/frame-ui-components`
+- **Shared Components**: `@ojfbot/frame-ui-components` (npm `^1.0.1`)
 - **State Management**: Redux Toolkit
 - **Backend**: Express.js + Node.js
 - **AI/LLM**: Anthropic Claude via LangGraph
@@ -166,7 +166,7 @@ The header contains an app switcher for navigating between related applications:
 - **Resume Builder**: http://localhost:3000
 - **Lean Canvas**: (see App Switcher for port)
 
-Edit the port mappings in `packages/browser-app/src/App.tsx` if needed.
+Edit the port mappings in `packages/browser-app/src/App.tsx` (or the shared shell configuration) if needed.
 
 ## Security
 
