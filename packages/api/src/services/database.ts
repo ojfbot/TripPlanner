@@ -199,6 +199,20 @@ class DatabaseService {
     return { ...thread, messageCount: 0 };
   }
 
+  getAllThreads(): Thread[] {
+    const stmt = this.db.prepare(`
+      SELECT
+        t.*,
+        COUNT(m.messageId) as messageCount
+      FROM threads t
+      LEFT JOIN messages m ON t.threadId = m.threadId
+      GROUP BY t.threadId
+      ORDER BY t.updatedAt DESC
+    `);
+
+    return stmt.all() as Thread[];
+  }
+
   getThreadsByUserId(userId: string): Thread[] {
     const stmt = this.db.prepare(`
       SELECT

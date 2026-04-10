@@ -6,6 +6,7 @@ import threadsRouter from './routes/threads.js';
 import chatRouter from './routes/chat.js';
 import integrationsRouter from './routes/integrations.js';
 import toolsRouter from './routes/tools.js';
+import beadsRouter from './routes/beads.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3011;
@@ -33,6 +34,9 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // Capability manifest (ADR-0007) — unauthenticated
 app.use('/api/tools', toolsRouter);
+
+// Bead projection — ADR-0016 compliant (Mayor aggregation)
+app.use('/api/beads', beadsRouter);
 
 // API routes
 app.use('/api/v1/threads', threadsRouter);
