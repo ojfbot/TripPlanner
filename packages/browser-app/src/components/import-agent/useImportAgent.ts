@@ -30,7 +30,6 @@ export function useImportAgent(onClose: () => void, onComplete?: () => void) {
   const [importSuccess, setImportSuccess] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [promptModifications, setPromptModifications] = useState('');
-  const [isGeneratingModifications, setIsGeneratingModifications] = useState(false);
   const [proposedChanges, setProposedChanges] = useState<ProposedChange[]>([]);
 
   const handleClose = () => {
@@ -45,7 +44,6 @@ export function useImportAgent(onClose: () => void, onComplete?: () => void) {
     setProcessId(null);
     setPromptModifications('');
     setProposedChanges([]);
-    setIsGeneratingModifications(false);
     onClose();
   };
 
@@ -99,34 +97,10 @@ export function useImportAgent(onClose: () => void, onComplete?: () => void) {
     setProcessId(null);
   };
 
+  // AI-powered prompt modification is not yet implemented (no backend endpoint).
+  // handleGenerateModifications is a no-op stub; the UI disables the trigger button.
   const handleGenerateModifications = async () => {
-    if (!promptModifications.trim()) return;
-    try {
-      setIsGeneratingModifications(true);
-      setShowFullPrompt(true);
-      const response = await apiClient.post('/api/v1/integrations/chatgpt/modify-prompt', {
-        currentPrompt: extractionPromptTemplate,
-        userRequest: promptModifications,
-      });
-      const changes = response.data.changes || [];
-      setProposedChanges(changes.map((change: any, idx: number) => ({
-        ...change,
-        id: `change-${idx}`,
-        accepted: undefined,
-      })));
-    } catch (err) {
-      console.error('Failed to generate modifications:', err);
-      setProposedChanges([{
-        id: 'change-1',
-        type: 'modify',
-        original: '### 2. TIME & SCHEDULING ACCURACY',
-        proposed: '### 2. TIME & SCHEDULING ACCURACY\n' + promptModifications,
-        lineNumber: 17,
-        accepted: undefined,
-      }]);
-    } finally {
-      setIsGeneratingModifications(false);
-    }
+    // Intentionally empty — endpoint does not exist yet.
   };
 
   const handleAcceptChange = (changeId: string) => {
@@ -186,7 +160,6 @@ export function useImportAgent(onClose: () => void, onComplete?: () => void) {
     importSuccess,
     importError, setImportError,
     promptModifications, setPromptModifications,
-    isGeneratingModifications,
     proposedChanges,
     extractionPromptTemplate,
     // Handlers
