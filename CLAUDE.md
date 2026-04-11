@@ -42,13 +42,12 @@ pnpm --filter @tripplanner/api dev
 ```
 
 ### Testing & Quality
+### Testing & Quality
 
 ```bash
-# No test suite currently exists - tests should be added using vitest
-# vitest is configured in the root devDependencies
-
 pnpm lint             # Lint all packages
 pnpm format           # Format with Prettier
+pnpm type-check       # Type-check all packages (tsc --noEmit, CI gate)
 ```
 
 ### Storybook
@@ -106,18 +105,19 @@ cp .env.example .env.local
 - Uses Zod for data validation
 
 **@tripplanner/api**
+**@tripplanner/api**
 - Express.js REST API backend (port 3011)
 - Routes for chat, threads, trips, itineraries
+- `GET /api/beads` — fleet-wide ADR-0016 bead projection endpoint
 - Middleware: CORS, Helmet, rate limiting
 - SQLite database for conversation persistence
-- Depends on agent-graph package
 
 **@tripplanner/browser-app**
 - React 18 + TypeScript + Vite
 - IBM Carbon Design System (v1.67) for UI
 - Redux Toolkit for state management
 - Components: InteractiveChat, CondensedChat, Dashboard, ThreadSidebarConnected
-- Shared UI from `@ojfbot/frame-ui-components`: DashboardLayout, ChatShell, ChatMessage, ThreadSidebar, MarkdownMessage, BadgeButton, ErrorBoundary (ADR-0030)
+- Shared UI from `@ojfbot/frame-ui-components` (published npm package): DashboardLayout, ChatShell, ChatMessage, ThreadSidebar, MarkdownMessage, BadgeButton, ErrorBoundary (ADR-0030)
 - Communicates with API via axios
 - Port 3010 by default
 
@@ -213,14 +213,18 @@ Header contains a hamburger menu (left side) that opens an application switcher 
 - `GET /api/v1/threads/{id}` - Get thread details
 - `DELETE /api/v1/threads/{id}` - Delete thread
 
+### Beads (ADR-0016)
+- `GET /api/beads` - Fleet-wide bead projection endpoint
+
 ### Health
+- `GET /health` - API health check
 - `GET /health` - API health check
 
 ## Security Considerations
 
 **Pre-commit Hook**: `.husky/pre-commit` runs `scripts/security-scan.sh` which:
-- Scans staged TypeScript/JavaScript/JSON files for API key patterns
-- Blocks commits containing: `sk-ant-*`, `sk-*`, `secret_*`, `ghp_*`
+- Scans staged TypeScript/JavaScript/JSON files for broad API key / secret patterns
+- Blocks commits containing common secret prefixes (e.g. `sk-ant-*`, `sk-*`, `secret_*`, `ghp_*`, and others)
 - Prevents accidental commits of `env.json`, `.env`, `.env.local`
 
 **API Key Isolation**: Browser app never receives API keys. All AI and integration calls go through the backend API.
