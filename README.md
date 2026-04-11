@@ -25,7 +25,8 @@ tripplanner/
 ├── packages/
 │   ├── agent-graph/         # LangGraph multi-agent system
 │   ├── api/                 # Express.js REST API
-│   └── browser-app/         # React + Vite frontend
+│   ├── browser-app/         # React + Vite frontend
+│   └── browser-automation/  # Visual regression testing
 ├── scripts/                 # Build and utility scripts
 ├── package.json             # Root package configuration
 ├── pnpm-workspace.yaml      # Workspace definition
@@ -45,6 +46,7 @@ tripplanner/
 - **Monorepo**: Lerna + pnpm workspaces
 - **Styling**: Sass (SCSS)
 - **Component Development**: Storybook ~8.4.0
+- **Visual Regression**: browser-automation (Puppeteer-based screenshot diffing)
 
 ## Getting Started
 
@@ -123,6 +125,7 @@ pnpm clean
 - Thread management endpoints
 - Chat message handling
 - SQLite database integration
+- `GET /api/beads` — ADR-0016 bead projection endpoint
 
 **browser-app** (`packages/browser-app`)
 - React frontend application
