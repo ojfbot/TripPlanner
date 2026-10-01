@@ -16,5 +16,7 @@ jobs:
       - name: Type-check (tsc --noEmit)
         run: pnpm type-check
       - run: pnpm build
+      - name: No loopback URLs in browser bundle
+        run: pnpm check:no-loopback
       - name: Build Storybook
         run: pnpm --filter @tripplanner/browser-app build-storybook
