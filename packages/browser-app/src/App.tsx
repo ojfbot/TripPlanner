@@ -74,9 +74,10 @@ function AppContent() {
 
   const handleAppClick = (appName: string) => {
     const port = appPorts[appName];
-    if (port) {
-      const url = `http://localhost:${port}`;
-      window.location.href = url;
+    // Sibling apps only exist on localhost ports in dev; never navigate a
+    // production visitor to loopback
+    if (port && import.meta.env.DEV) {
+      window.location.href = `http://localhost:${port}`;
     }
     setSideNavExpanded(false); // Close sidebar after click
   };
