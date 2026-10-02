@@ -42,7 +42,6 @@ pnpm --filter @tripplanner/api dev
 ```
 
 ### Testing & Quality
-### Testing & Quality
 
 ```bash
 pnpm lint             # Lint all packages
@@ -105,7 +104,6 @@ cp .env.example .env.local
 - Uses Zod for data validation
 
 **@tripplanner/api**
-**@tripplanner/api**
 - Express.js REST API backend (port 3011)
 - Routes for chat, threads, trips, itineraries
 - `GET /api/beads` — fleet-wide ADR-0016 bead projection endpoint
@@ -119,7 +117,8 @@ cp .env.example .env.local
 - Components: InteractiveChat, CondensedChat, Dashboard, ThreadSidebarConnected
 - Shared UI from `@ojfbot/frame-ui-components` (published npm package): DashboardLayout, ChatShell, ChatMessage, ThreadSidebar, MarkdownMessage, BadgeButton, ErrorBoundary (ADR-0030)
 - Communicates with API via axios
-- Port 3010 by default
+- API base URL is set via a build-time environment variable (no localhost fallback in production)
+- Port 3010 by default for local development
 
 ### Build Dependencies
 
@@ -218,7 +217,6 @@ Header contains a hamburger menu (left side) that opens an application switcher 
 
 ### Health
 - `GET /health` - API health check
-- `GET /health` - API health check
 
 ## Security Considerations
 
@@ -302,7 +300,7 @@ All three projects share similar patterns:
 
 ## Frame OS Integration
 
-TripPlanner is a **Module Federation remote** in the Frame OS cluster (see `domain-knowledge/frame-os-context.md`).
+TripPlanner is a **Module Federation remote** in the fleet-runner cluster (see `domain-knowledge/frame-os-context.md`).
 
 ### MF remote surface area
 `packages/browser-app/vite.config.ts` exposes two components:

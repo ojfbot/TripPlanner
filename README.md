@@ -162,14 +162,11 @@ ANTHROPIC_API_KEY=your_api_key_here
 - API Server: 3011 (configurable in `packages/api/src/index.ts`)
 
 ### App Switcher
+The header contains an app switcher for navigating between related applications.
+In production, URLs are resolved from build-time environment variables (see build-time env guard).
+For local development, the apps run on their respective dev-server ports.
 
-The header contains an app switcher for navigating between related applications:
-- **TripPlanner**: http://localhost:3010 (this app)
-- **BlogEngine**: http://localhost:3005
-- **Resume Builder**: http://localhost:3000
-- **Lean Canvas**: (see App Switcher for port)
-
-Edit the port mappings in `packages/browser-app/src/App.tsx` (or the shared shell configuration) if needed.
+Edit the URL configuration in `packages/browser-app/src/App.tsx` (or the shared shell configuration) if needed.
 
 ## Security
 
@@ -241,7 +238,7 @@ Part of [Frame OS](https://github.com/ojfbot/shell) — an AI-native application
 | Repo | Description |
 |------|-------------|
 | [shell](https://github.com/ojfbot/shell) | Module Federation host + frame-agent LLM gateway |
-| [core](https://github.com/ojfbot/core) | Workflow framework — 30+ slash commands + TypeScript engine |
+| [core](https://github.com/ojfbot/core) | Workflow framework (fleet-runner) — 30+ slash commands + TypeScript engine |
 | [cv-builder](https://github.com/ojfbot/cv-builder) | AI-powered resume builder with LangGraph agents |
 | [blogengine](https://github.com/ojfbot/BlogEngine) | AI blog content creation platform |
 | **TripPlanner** | **AI trip planner with 11-phase pipeline (this repo)** |
